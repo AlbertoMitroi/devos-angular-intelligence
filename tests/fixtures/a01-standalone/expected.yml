@@ -1,0 +1,96 @@
+# Fixture 1: standalone components (Angular 22 default) with nested child components, signals,
+# @if/@for/@else blocks, an inline template with an output, and an element no component matches.
+exitCode: 0
+status: complete
+loadModes:
+  ".": semantic
+toolchain:
+  ".": { compiler: "6.0.3", compilerSource: repository, angularCompiler: "22.2.3", angularCompilerSource: repository }
+diagnostics: []
+sourceEntities:
+  - module ts:.:src/main#
+  - module ts:.:src/app/app.component#
+  - module ts:.:src/app/header.component#
+  - module ts:.:src/app/item.component#
+  - class ts:.:src/app/app.component#AppComponent
+  - property ts:.:src/app/app.component#AppComponent.title
+  - property ts:.:src/app/app.component#AppComponent.items
+  - property ts:.:src/app/app.component#AppComponent.selected
+  - method ts:.:src/app/app.component#AppComponent.select
+  - class ts:.:src/app/header.component#HeaderComponent
+  - property ts:.:src/app/header.component#HeaderComponent.title
+  - property ts:.:src/app/header.component#HeaderComponent.refresh
+  - class ts:.:src/app/item.component#ItemComponent
+  - property ts:.:src/app/item.component#ItemComponent.name
+declarations:
+  - entity: ts:.:src/app/app.component#AppComponent
+    at: [src/app/app.component.ts:10]
+  - entity: ts:.:src/app/app.component#AppComponent.select
+    at: [src/app/app.component.ts:15]
+relations:
+  - kinds: [references]
+    to: "ts:."
+    items:
+      - references import ts:.:src/main# -> ts:.:src/app/app.component# @src/main.ts:2
+      - references import ts:.:src/main# -> ts:.:src/app/app.component#AppComponent @src/main.ts:2
+      - references read ts:.:src/main# -> ts:.:src/app/app.component#AppComponent @src/main.ts:4
+      - references import ts:.:src/app/app.component# -> ts:.:src/app/header.component# @src/app/app.component.ts:2
+      - references import ts:.:src/app/app.component# -> ts:.:src/app/header.component#HeaderComponent @src/app/app.component.ts:2
+      - references import ts:.:src/app/app.component# -> ts:.:src/app/item.component# @src/app/app.component.ts:3
+      - references import ts:.:src/app/app.component# -> ts:.:src/app/item.component#ItemComponent @src/app/app.component.ts:3
+      - references decorator ts:.:src/app/app.component#AppComponent -> ts:.:src/app/header.component#HeaderComponent @src/app/app.component.ts:7
+      - references decorator ts:.:src/app/app.component#AppComponent -> ts:.:src/app/item.component#ItemComponent @src/app/app.component.ts:7
+      - references write ts:.:src/app/app.component#AppComponent.select -> ts:.:src/app/app.component#AppComponent.selected @src/app/app.component.ts:16
+      - references invocation ts:.:src/app/app.component#AppComponent -> ts:.:src/app/app.component#AppComponent.title @src/app/app.component.html:1
+      - references invocation ts:.:src/app/app.component#AppComponent -> ts:.:src/app/app.component#AppComponent.select @src/app/app.component.html:1
+      - references invocation ts:.:src/app/app.component#AppComponent -> ts:.:src/app/app.component#AppComponent.items @src/app/app.component.html:2
+      - references invocation ts:.:src/app/app.component#AppComponent -> ts:.:src/app/app.component#AppComponent.items @src/app/app.component.html:3
+      - references invocation ts:.:src/app/app.component#AppComponent -> ts:.:src/app/app.component#AppComponent.select @src/app/app.component.html:4
+      - references invocation ts:.:src/app/header.component#HeaderComponent -> ts:.:src/app/header.component#HeaderComponent.title @src/app/header.component.ts:5
+      - references read ts:.:src/app/header.component#HeaderComponent -> ts:.:src/app/header.component#HeaderComponent.refresh @src/app/header.component.ts:6
+      - references invocation ts:.:src/app/item.component#ItemComponent -> ts:.:src/app/item.component#ItemComponent.name @src/app/item.component.ts:5
+  - kinds: [contains]
+    from: "ts:.:src/app/header.component#"
+    items:
+      - contains ts:.:src/app/header.component# -> ts:.:src/app/header.component#HeaderComponent @src/app/header.component.ts:8
+      - contains ts:.:src/app/header.component#HeaderComponent -> ts:.:src/app/header.component#HeaderComponent.title @src/app/header.component.ts:9
+      - contains ts:.:src/app/header.component#HeaderComponent -> ts:.:src/app/header.component#HeaderComponent.refresh @src/app/header.component.ts:10
+observations:
+  kinds: [ui.component, ui.uses_component, ui.uses_directive]
+  items:
+    - kind: ui.component
+      component: ts:.:src/app/app.component#AppComponent
+      selector: app-root
+      template: src/app/app.component.html
+      ext: { angular: { standalone: true, inlineTemplate: false, imports: [ts:.:src/app/header.component#HeaderComponent, ts:.:src/app/item.component#ItemComponent] } }
+      at: src/app/app.component.ts:5
+    - kind: ui.component
+      component: ts:.:src/app/header.component#HeaderComponent
+      selector: app-header
+      template: src/app/header.component.ts
+      ext: { angular: { standalone: true, inlineTemplate: true } }
+      at: src/app/header.component.ts:3
+    - kind: ui.component
+      component: ts:.:src/app/item.component#ItemComponent
+      selector: app-item
+      template: src/app/item.component.ts
+      at: src/app/item.component.ts:3
+    - kind: ui.uses_component
+      from: ts:.:src/app/app.component#AppComponent
+      selector: app-header
+      to: ts:.:src/app/header.component#HeaderComponent
+      at: src/app/app.component.html:1
+    - kind: ui.uses_component
+      from: ts:.:src/app/app.component#AppComponent
+      selector: app-item
+      to: ts:.:src/app/item.component#ItemComponent
+      at: src/app/app.component.html:4
+    - kind: ui.uses_component
+      from: ts:.:src/app/app.component#AppComponent
+      selector: app-missing
+      to: unresolved
+      at: src/app/app.component.html:9
+links:
+  - ui renders exact src/app/app.component.html:1 -> src/app/header.component.ts:3
+  - ui renders exact src/app/app.component.html:4 -> src/app/item.component.ts:3
+  - ui renders unresolved src/app/app.component.html:9 -> null

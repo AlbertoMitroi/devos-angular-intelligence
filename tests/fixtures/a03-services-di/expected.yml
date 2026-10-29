@@ -1,0 +1,61 @@
+# Fixture 3: services with providedIn 'root', constructor injection and inject(); a token from a package
+# (HttpClient, provided by provideHttpClient()) and a source token without a provider stay unresolved with reasons.
+exitCode: 0
+status: complete
+loadModes:
+  ".": semantic
+toolchain:
+  ".": { compiler: "6.0.3", compilerSource: repository, angularCompiler: "22.2.3", angularCompilerSource: repository }
+diagnostics: []
+relations:
+  - kinds: [references, calls_declared_target]
+    from: "ts:.:src/app/cart.service#CartService.total"
+    items:
+      - references read ts:.:src/app/cart.service#CartService.total -> ts:.:src/app/cart.service#CartService.pricing @src/app/cart.service.ts:12
+      - references invocation ts:.:src/app/cart.service#CartService.total -> ts:.:src/app/pricing.service#PricingService.total @src/app/cart.service.ts:12
+      - calls_declared_target ts:.:src/app/cart.service#CartService.total -> ts:.:src/app/pricing.service#PricingService.total @src/app/cart.service.ts:12
+  - kinds: [references]
+    from: "ts:.:src/app/cart.component#CartComponent"
+    to: "ts:."
+    items:
+      - references read ts:.:src/app/cart.component#CartComponent -> ts:.:src/app/cart.component#CartComponent.cart @src/app/cart.component.ts:7
+      - references other ts:.:src/app/cart.component#CartComponent.cart -> ts:.:src/app/cart.service#CartService @src/app/cart.component.ts:10
+      - references other ts:.:src/app/cart.component#CartComponent.audit -> ts:.:src/app/audit-log#AuditLog @src/app/cart.component.ts:10
+observations:
+  kinds: [di.registers, di.consumes]
+  items:
+    - kind: di.registers
+      service: ts:.:src/app/pricing.service#PricingService
+      implementation: ts:.:src/app/pricing.service#PricingService
+      lifetime: root
+      registrationPath: root
+      at: src/app/pricing.service.ts:3
+    - kind: di.registers
+      service: ts:.:src/app/cart.service#CartService
+      implementation: ts:.:src/app/cart.service#CartService
+      lifetime: root
+      at: src/app/cart.service.ts:5
+    - kind: di.consumes
+      service: ts:.:src/app/pricing.service#PricingService
+      consumer: ts:.:src/app/cart.service#CartService
+      via: inject
+      at: src/app/cart.service.ts:7
+    - kind: di.consumes
+      consumer: ts:.:src/app/cart.service#CartService
+      via: constructor
+      at: src/app/cart.service.ts:9
+    - kind: di.consumes
+      service: ts:.:src/app/cart.service#CartService
+      consumer: ts:.:src/app/cart.component#CartComponent
+      via: constructor
+      at: src/app/cart.component.ts:10
+    - kind: di.consumes
+      service: ts:.:src/app/audit-log#AuditLog
+      consumer: ts:.:src/app/cart.component#CartComponent
+      via: constructor
+      at: src/app/cart.component.ts:10
+links:
+  - di consumes_contract exact src/app/cart.service.ts:7 -> src/app/pricing.service.ts:3
+  - di consumes_contract unresolved src/app/cart.service.ts:9 -> null
+  - di consumes_contract exact src/app/cart.component.ts:10 -> src/app/cart.service.ts:5
+  - di consumes_contract unresolved src/app/cart.component.ts:10 -> null
