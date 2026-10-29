@@ -1,0 +1,52 @@
+# Fixture 11: NgRx: actions, a dispatch from a component, an effect reacting to the action and reaching an HTTP call
+# through a service (depth 3), and a reducer handling the second action.
+exitCode: 0
+status: complete
+loadModes:
+  ".": semantic
+diagnostics: []
+observations:
+  kinds: [state.action, inprocess.send, inprocess.handler, http.call]
+  items:
+    - kind: state.action
+      action: ts:.:src/app/orders.actions#loadOrders
+      type: "[Orders] Load"
+      mechanism: ngrx
+      at: src/app/orders.actions.ts:3
+    - kind: state.action
+      action: ts:.:src/app/orders.actions#ordersLoaded
+      type: "[Orders] Loaded"
+      mechanism: ngrx
+      at: src/app/orders.actions.ts:4
+    - kind: inprocess.send
+      request: ts:.:src/app/orders.actions#loadOrders
+      sender: ts:.:src/app/orders-page.component#OrdersPageComponent.refresh
+      mechanism: ngrx
+      at: src/app/orders-page.component.ts:10
+    - kind: inprocess.handler
+      request: ts:.:src/app/orders.actions#loadOrders
+      handler: ts:.:src/app/orders.effects#OrdersEffects.load$
+      mechanism: ngrx
+      ext: { ngrx: { role: effect } }
+      refs: { ext.ngrx.httpCalls: [src/app/orders.api.ts:9] }
+      at: src/app/orders.effects.ts:12
+    - kind: inprocess.handler
+      request: ts:.:src/app/orders.actions#ordersLoaded
+      handler: ts:.:src/app/orders.reducer#ordersReducer
+      mechanism: ngrx
+      ext: { ngrx: { role: reducer } }
+      at: src/app/orders.reducer.ts:6
+    - kind: http.call
+      method: GET
+      urlTemplate: /api/orders
+      canonicalRoute: /api/orders
+      baseAddress: null
+      caller: ts:.:src/app/orders.api#OrdersApi.list
+      resolution: exact
+      at: src/app/orders.api.ts:9
+links:
+  - inprocess dispatches_to exact src/app/orders-page.component.ts:10 -> src/app/orders.effects.ts:12
+  - di consumes_contract unresolved src/app/orders-page.component.ts:7 -> null
+  - di consumes_contract unresolved src/app/orders.effects.ts:9 -> null
+  - di consumes_contract exact src/app/orders.effects.ts:10 -> src/app/orders.api.ts:4
+  - di consumes_contract unresolved src/app/orders.api.ts:6 -> null

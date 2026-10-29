@@ -1,0 +1,64 @@
+# Spike S1 output, recorded on 2026-10-29 by running docs/spikes/s1-typescript7-api.sh in node:24-bookworm-slim@sha256:c86ecead9e55a5210ac1727de38a4ca840bf03dcaf34dc9749addbf383b1920c (linux/arm64).
+# As captured by the session tool (the capture starts mid-output where the tool truncated it).
+
+23:export declare class API<FromLSP extends boolean = false> {
+53:    getTimingInfo(): TimingInfo;
+57:export declare class InternalAPI {
+66:export declare class Snapshot {
+75:    getProjects(): readonly Project[];
+76:    getProject(configFileName: string): Project | undefined;
+77:    getDefaultProjectForFile(file: DocumentIdentifier): Project | undefined;
+90:    getProject(projectId: Path): Project | undefined;
+91:    getOrCreateSymbol(data: SymbolResponse): Symbol;
+92:    getSymbol(id: number): Symbol | undefined;
+105:    getOrCreateSymbol(data: SymbolResponse): Symbol;
+106:    getSymbol(id: number): Symbol | undefined;
+107:    getOrCreateType(data: TypeResponse): TypeObject;
+108:    getType(id: number): TypeObject | undefined;
+109:    getOrCreateSignature(data: SignatureResponse): Signature;
+110:    getSignature(id: number): Signature | undefined;
+119:export declare class Project {
+131:export declare class Program {
+140:    getCompilerOptions(): CompilerOptions;
+141:    getSourceFile(file: DocumentIdentifier): SourceFile | undefined;
+142:    getSourceFileNames(): readonly string[];
+148:    getSourceFileMetadata(fileName: string): SourceFileMetadata | undefined;
+155:    getSourceFileMetadataByPath(path: Path): SourceFileMetadata | undefined;
+173:    getSyntacticDiagnostics(file?: DocumentIdentifier): readonly Diagnostic[];
+178:    getBindDiagnostics(file?: DocumentIdentifier): readonly Diagnostic[];
+183:    getSemanticDiagnostics(file?: DocumentIdentifier): readonly Diagnostic[];
+188:    getSuggestionDiagnostics(file?: DocumentIdentifier): readonly Diagnostic[];
+193:    getDeclarationDiagnostics(file?: DocumentIdentifier): readonly Diagnostic[];
+197:    getProgramDiagnostics(): readonly Diagnostic[];
+201:    getGlobalDiagnostics(): readonly Diagnostic[];
+205:    getConfigFileParsingDiagnostics(): readonly Diagnostic[];
+207:export declare class Checker {
+215:    getSymbolAtLocation(node: Node): Symbol | undefined;
+216:    getSymbolAtLocation(nodes: readonly Node[]): (Symbol | undefined)[];
+217:    getSymbolAtPosition(file: DocumentIdentifier, position: number): Symbol | undefined;
+218:    getSymbolAtPosition(file: DocumentIdentifier, positions: readonly number[]): (Symbol | undefined)[];
+219:    getTypeOfSymbol(symbol: Symbol): Type | undefined;
+220:    getTypeOfSymbol(symbols: readonly Symbol[]): (Type | undefined)[];
+226:    getDeclaredTypeOfSymbol(symbol: Symbol): Type;
+227:    getReferencesToSymbolInFile(file: DocumentIdentifier, symbol: Symbol): NodeHandle[];
+228:    getReferencedSymbolsForNode(node: Node, position: number): ReferencedSymbolEntry[];
+229:    getSignatureUsage(signatureDecl: Node): SignatureUsage[];
+230:    getCompletionsAtPosition(document: string, position: number, options?: CompletionOptions): CompletionInfo | undefined;
+231:    getTypeAtLocation(node: Node): Type | undefined;
+232:    getTypeAtLocation(nodes: readonly Node[]): (Type | undefined)[];
+233:    getSignaturesOfType(type: Type, kind: SignatureKind): readonly Signature[];
+234:    getResolvedSignature(node: Node): Signature | undefined;
+235:    getTypeAtPosition(file: DocumentIdentifier, position: number): Type | undefined;
+236:    getTypeAtPosition(file: DocumentIdentifier, positions: readonly number[]): (Type | undefined)[];
+238:    getResolvedSymbol(node: Identifier): Symbol | undefined;
+239:    getContextualType(node: Expression): Type | undefined;
+240:    getBaseTypeOfLiteralType(type: Type): Type | undefined;
+241:    getNonNullableType(type: Type): Type | undefined;
+242:    getTypeFromTypeNode(node: TypeNode): Type | undefined;
+243:    getWidenedType(type: Type): Type | undefined;
+244:    getParameterType(signature: Signature, index: number): Type | undefined;
+247:    getShorthandAssignmentValueSymbol(node: Node): Symbol | undefined;
+253:    getTypeOfSymbolAtLocation(symbol: Symbol, location: Node): Type;
+255:    getAnyType(): Type;
+256:    getStringType(): Type;
+== README API section

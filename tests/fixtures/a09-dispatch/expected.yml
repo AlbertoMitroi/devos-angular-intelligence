@@ -1,0 +1,40 @@
+# Fixture 9: calls through an interface and an abstract class (possible_runtime_target to every implementation,
+# always candidate), a concrete override (no runtime fan-out), overloads with distinct ids, constructors.
+exitCode: 0
+status: complete
+loadModes:
+  ".": semantic
+diagnostics: []
+entities:
+  - "ts:.:src/app/checkout#format(string)"
+  - "ts:.:src/app/checkout#format(number)"
+  - "ts:.:src/app/checkout#format(string | number)"
+absent:
+  - "ts:.:src/app/checkout#format"
+declarations:
+  - entity: "ts:.:src/app/checkout#format(number)"
+    at: [src/app/checkout.ts:5]
+relations:
+  - kinds: [inherits, implements, overrides]
+    items:
+      - implements ts:.:src/app/payments#StripeGateway -> ts:.:src/app/payments#PaymentGateway @src/app/payments.ts:5
+      - implements ts:.:src/app/payments#StripeGateway.charge -> ts:.:src/app/payments#PaymentGateway.charge @src/app/payments.ts:6
+      - implements ts:.:src/app/payments#PaypalGateway -> ts:.:src/app/payments#PaymentGateway @src/app/payments.ts:11
+      - implements ts:.:src/app/payments#PaypalGateway.charge -> ts:.:src/app/payments#PaymentGateway.charge @src/app/payments.ts:12
+      - inherits ts:.:src/app/notifiers#EmailNotifier -> ts:.:src/app/notifiers#Notifier @src/app/notifiers.ts:9
+      - overrides ts:.:src/app/notifiers#EmailNotifier.send -> ts:.:src/app/notifiers#Notifier.send @src/app/notifiers.ts:10
+      - overrides ts:.:src/app/notifiers#EmailNotifier.prefix -> ts:.:src/app/notifiers#Notifier.prefix @src/app/notifiers.ts:14
+  - kinds: [calls_declared_target, possible_runtime_target]
+    to: "ts:."
+    items:
+      - calls_declared_target ts:.:src/main# -> ts:.:src/app/checkout#Checkout.constructor @src/main.ts:5
+      - calls_declared_target ts:.:src/main# -> ts:.:src/app/payments#StripeGateway @src/main.ts:5
+      - calls_declared_target ts:.:src/main# -> ts:.:src/app/notifiers#EmailNotifier @src/main.ts:5
+      - calls_declared_target ts:.:src/main# -> ts:.:src/app/checkout#Checkout.run @src/main.ts:5
+      - calls_declared_target ts:.:src/app/checkout#Checkout.run -> ts:.:src/app/payments#PaymentGateway.charge @src/app/checkout.ts:14
+      - calls_declared_target ts:.:src/app/checkout#Checkout.run -> ts:.:src/app/notifiers#Notifier.send @src/app/checkout.ts:15
+      - calls_declared_target ts:.:src/app/checkout#Checkout.run -> ts:.:src/app/checkout#format(number) @src/app/checkout.ts:15
+      - calls_declared_target ts:.:src/app/notifiers#EmailNotifier.send -> ts:.:src/app/notifiers#EmailNotifier.prefix @src/app/notifiers.ts:11
+      - possible_runtime_target ts:.:src/app/checkout#Checkout.run -> ts:.:src/app/payments#StripeGateway.charge @src/app/checkout.ts:14
+      - possible_runtime_target ts:.:src/app/checkout#Checkout.run -> ts:.:src/app/payments#PaypalGateway.charge @src/app/checkout.ts:14
+      - possible_runtime_target ts:.:src/app/checkout#Checkout.run -> ts:.:src/app/notifiers#EmailNotifier.send @src/app/checkout.ts:15

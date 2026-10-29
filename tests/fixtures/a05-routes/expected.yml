@@ -1,0 +1,52 @@
+# Fixture 5: provideRouter with nested children, a guard, loadComponent, loadChildren of a default-exported table,
+# a redirect, and a Routes table no root configuration reaches (relative path with a reason, never a guess).
+exitCode: 0
+status: complete
+loadModes:
+  ".": semantic
+diagnostics: []
+observations:
+  kinds: [ui.route]
+  items:
+    - kind: ui.route
+      path: /
+      component: ts:.:src/app/home.component#HomeComponent
+      loadComponent: null
+      loadChildren: null
+      redirectTo: null
+      guards: {}
+      ext: { angular: { pathMatch: full, lazy: false } }
+      at: src/app/app.routes.ts:6
+    - kind: ui.route
+      path: /orders
+      component: null
+      guards: { canActivate: [ts:.:src/app/auth.guard#authGuard] }
+      ext: { angular: { lazy: false } }
+      at: src/app/app.routes.ts:8
+    - kind: ui.route
+      path: /orders/:id
+      component: null
+      loadComponent: ts:.:src/app/order-detail.component#OrderDetailComponent
+      guards: {}
+      ext: { angular: { lazy: true } }
+      at: src/app/app.routes.ts:11
+    - kind: ui.route
+      path: /admin
+      loadChildren: ts:.:src/app/admin/admin.routes#adminRoutes
+      ext: { angular: { lazy: true } }
+      at: src/app/app.routes.ts:14
+    - kind: ui.route
+      path: /admin/users
+      component: ts:.:src/app/admin/users.component#UsersComponent
+      ext: { angular: { lazy: false } }
+      at: src/app/admin/admin.routes.ts:4
+    - kind: ui.route
+      path: /old
+      component: null
+      redirectTo: orders
+      at: src/app/app.routes.ts:15
+    - kind: ui.route
+      path: null
+      component: ts:.:src/app/home.component#HomeComponent
+      ext: { angular: { relativePath: lost, reason: no root router configuration reaches this table } }
+      at: src/app/orphan.routes.ts:4

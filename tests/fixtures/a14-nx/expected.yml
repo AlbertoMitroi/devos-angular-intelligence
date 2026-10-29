@@ -1,0 +1,44 @@
+# Fixture 14: Nx workspace with two applications and one library reached through a tsconfig path alias (no baseUrl);
+# each file is extracted once, by its owning project, and both applications render the library component.
+exitCode: 0
+status: complete
+loadModes:
+  apps/admin: semantic
+  apps/shop: semantic
+  libs/ui: semantic
+diagnostics: []
+sourceEntities:
+  - module ts:apps/admin:apps/admin/src/main#
+  - module ts:apps/admin:apps/admin/src/app/admin.component#
+  - class ts:apps/admin:apps/admin/src/app/admin.component#AdminComponent
+  - module ts:apps/shop:apps/shop/src/main#
+  - module ts:apps/shop:apps/shop/src/app/shop.component#
+  - class ts:apps/shop:apps/shop/src/app/shop.component#ShopComponent
+  - module ts:libs/ui:libs/ui/src/index#
+  - module ts:libs/ui:libs/ui/src/lib/button.component#
+  - class ts:libs/ui:libs/ui/src/lib/button.component#ButtonComponent
+  - property ts:libs/ui:libs/ui/src/lib/button.component#ButtonComponent.label
+relations:
+  - kinds: [references]
+    to: "ts:libs/ui:"
+    items:
+      - references import ts:apps/admin:apps/admin/src/app/admin.component# -> ts:libs/ui:libs/ui/src/index# @apps/admin/src/app/admin.component.ts:2
+      - references import ts:apps/admin:apps/admin/src/app/admin.component# -> ts:libs/ui:libs/ui/src/lib/button.component#ButtonComponent @apps/admin/src/app/admin.component.ts:2
+      - references decorator ts:apps/admin:apps/admin/src/app/admin.component#AdminComponent -> ts:libs/ui:libs/ui/src/lib/button.component#ButtonComponent @apps/admin/src/app/admin.component.ts:4
+      - references import ts:apps/shop:apps/shop/src/app/shop.component# -> ts:libs/ui:libs/ui/src/index# @apps/shop/src/app/shop.component.ts:2
+      - references import ts:apps/shop:apps/shop/src/app/shop.component# -> ts:libs/ui:libs/ui/src/lib/button.component#ButtonComponent @apps/shop/src/app/shop.component.ts:2
+      - references decorator ts:apps/shop:apps/shop/src/app/shop.component#ShopComponent -> ts:libs/ui:libs/ui/src/lib/button.component#ButtonComponent @apps/shop/src/app/shop.component.ts:4
+      - references import ts:libs/ui:libs/ui/src/index# -> ts:libs/ui:libs/ui/src/lib/button.component# @libs/ui/src/index.ts:1
+      - references import ts:libs/ui:libs/ui/src/index# -> ts:libs/ui:libs/ui/src/lib/button.component#ButtonComponent @libs/ui/src/index.ts:1
+      - references invocation ts:libs/ui:libs/ui/src/lib/button.component#ButtonComponent -> ts:libs/ui:libs/ui/src/lib/button.component#ButtonComponent.label @libs/ui/src/lib/button.component.ts:3
+observations:
+  kinds: [ui.component, ui.uses_component]
+  items:
+    - { kind: ui.component, component: ts:apps/admin:apps/admin/src/app/admin.component#AdminComponent, selector: admin-root, at: apps/admin/src/app/admin.component.ts:4 }
+    - { kind: ui.component, component: ts:apps/shop:apps/shop/src/app/shop.component#ShopComponent, selector: shop-root, at: apps/shop/src/app/shop.component.ts:4 }
+    - { kind: ui.component, component: ts:libs/ui:libs/ui/src/lib/button.component#ButtonComponent, selector: acme-button, at: libs/ui/src/lib/button.component.ts:3 }
+    - { kind: ui.uses_component, from: ts:apps/admin:apps/admin/src/app/admin.component#AdminComponent, selector: acme-button, to: ts:libs/ui:libs/ui/src/lib/button.component#ButtonComponent, at: apps/admin/src/app/admin.component.ts:4 }
+    - { kind: ui.uses_component, from: ts:apps/shop:apps/shop/src/app/shop.component#ShopComponent, selector: acme-button, to: ts:libs/ui:libs/ui/src/lib/button.component#ButtonComponent, at: apps/shop/src/app/shop.component.ts:4 }
+links:
+  - ui renders exact apps/admin/src/app/admin.component.ts:4 -> libs/ui/src/lib/button.component.ts:3
+  - ui renders exact apps/shop/src/app/shop.component.ts:4 -> libs/ui/src/lib/button.component.ts:3

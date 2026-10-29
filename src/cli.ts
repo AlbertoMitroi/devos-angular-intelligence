@@ -121,12 +121,17 @@ export async function main(argv: string[]): Promise<number> {
   return EXIT.usage;
 }
 
+/** Exits once stdout and stderr are flushed: on a pipe, process.exit() alone truncates output after 64 KiB. */
+function exitAfterFlush(code: number): void {
+  process.stdout.write('', () => process.stderr.write('', () => process.exit(code)));
+}
+
 if (import.meta.main) {
   main(process.argv.slice(2)).then(
-    (code) => process.exit(code),
+    (code) => exitAfterFlush(code),
     (e) => {
       process.stderr.write(`internal error: ${(e as Error).stack ?? e}\n`);
-      process.exit(EXIT.internal);
+      exitAfterFlush(EXIT.internal);
     },
   );
 }

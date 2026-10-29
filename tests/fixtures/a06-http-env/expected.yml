@@ -1,0 +1,69 @@
+# Fixture 6: HttpClient calls folded through template literals, concatenation, a stable class property and a
+# constant; environment base URLs per configuration (D20: stored as destinations); a functional interceptor
+# that prefixes relative URLs; a fully dynamic URL stays unresolved (unknown is not '/').
+exitCode: 0
+status: complete
+loadModes:
+  ".": semantic
+diagnostics: []
+observations:
+  kinds: [http.call, http.interceptor]
+  items:
+    - kind: http.interceptor
+      interceptor: ts:.:src/app/gateway.interceptor#gatewayInterceptor
+      urlPrefix: "{environment.gatewayUrl}"
+      registered: true
+      at: src/app/gateway.interceptor.ts:8
+    - kind: http.call
+      method: GET
+      urlTemplate: /orders/{}
+      canonicalRoute: /api/orders/{}
+      baseAddress:
+        source: environment
+        key: environment.apiUrl
+        file: src/environments/environment.ts
+        values:
+          - { application: ".", configuration: default, file: src/environments/environment.ts, value: "http://localhost:5000/api" }
+          - { application: ".", configuration: production, file: src/environments/environment.prod.ts, value: "https://api.example.test/api" }
+        nameSource: configuration
+      client: ts:.:src/app/orders.service#OrdersService
+      caller: ts:.:src/app/orders.service#OrdersService.get
+      resolution: exact
+      at: src/app/orders.service.ts:14
+    - kind: http.call
+      method: POST
+      urlTemplate: /Orders
+      canonicalRoute: /api/orders
+      baseAddress: { source: environment, key: environment.apiUrl }
+      caller: ts:.:src/app/orders.service#OrdersService.create
+      resolution: exact
+      at: src/app/orders.service.ts:18
+    - kind: http.call
+      method: GET
+      urlTemplate: /catalog/items?page=1
+      canonicalRoute: /catalog/items
+      baseAddress:
+        source: interceptor
+        interceptor: ts:.:src/app/gateway.interceptor#gatewayInterceptor
+        key: environment.gatewayUrl
+        values:
+          - { application: ".", configuration: default, file: src/environments/environment.ts, value: "http://localhost:7000" }
+          - { application: ".", configuration: production, file: src/environments/environment.prod.ts, value: "https://gateway.example.test" }
+      caller: ts:.:src/app/orders.service#OrdersService.items
+      resolution: exact
+      at: src/app/gateway.interceptor.ts:8,src/app/orders.service.ts:22
+    - kind: http.call
+      method: DELETE
+      urlTemplate: /orders/{}
+      canonicalRoute: /api/orders/{}
+      baseAddress: { source: environment, key: environment.apiUrl }
+      caller: ts:.:src/app/orders.service#OrdersService.remove
+      resolution: exact
+      at: src/app/orders.service.ts:26
+    - kind: http.call
+      method: GET
+      canonicalRoute: null
+      baseAddress: { source: unknown, expression: url }
+      caller: ts:.:src/app/orders.service#OrdersService.dynamic
+      resolution: unresolved
+      at: src/app/orders.service.ts:30

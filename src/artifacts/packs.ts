@@ -46,6 +46,11 @@ export function slug(text: string): string {
   return text === '.' ? 'root' : text.replace(/[^A-Za-z0-9._-]+/g, '__');
 }
 
+/** The canonical route in backticks, or `unknown route` when the URL could not be folded. */
+function route(call: Rec): string {
+  return call.canonicalRoute == null ? 'unknown route' : `\`${call.canonicalRoute}\``;
+}
+
 function baseText(base: unknown): string {
   if (!base || typeof base !== 'object') return 'same origin';
   const b = base as Record<string, any>;
@@ -82,7 +87,7 @@ export function writePacks(outDir: string, set: RecordSet, commit: string, statu
   const projects = set.projects.filter((p) => p.recordType === 'project');
   const contexts = set.projects.filter((p) => p.recordType === 'analysisContext');
   const routes = obs('ui.route').filter((r) => r.path !== null).sort((a, b) => compareOrdinal(a.path as string, b.path as string) || compareOrdinal(a.id, b.id));
-  const calls = obs('http.call').sort((a, b) => compareOrdinal(a.canonicalRoute as string, b.canonicalRoute as string) || compareOrdinal(a.method as string, b.method as string) || compareOrdinal(a.id, b.id));
+  const calls = obs('http.call').sort((a, b) => compareOrdinal(String(a.canonicalRoute ?? ''), String(b.canonicalRoute ?? '')) || compareOrdinal(a.method as string, b.method as string) || compareOrdinal(a.id, b.id));
 
   // Overview.
   const o: string[] = [`# Overview: ${repository}`, '', `Commit \`${commit}\`, generation status **${status}**. Produced by angular-intelligence; every line cites \`path:line\` evidence.`, '', '## Projects', '', '| Project | Kind | Type | Load mode | Compiler | Compilation errors |', '|---|---|---|---|---|---|'];
@@ -107,13 +112,13 @@ export function writePacks(outDir: string, set: RecordSet, commit: string, statu
   o.push('', '## Feature areas', '', 'First route segment and the number of routes below it.', '');
   for (const [seg, n] of [...areas].sort(([a], [b]) => compareOrdinal(a, b))) o.push(`- \`${seg}\`: ${n}`);
   o.push('', '## HTTP calls', '', '| Method | Route | Base address | Client | Resolution | Evidence |', '|---|---|---|---|---|---|');
-  o.push(...capped(calls, (c) => `| ${c.method} | \`${c.canonicalRoute}\` | ${cell(baseText(c.baseAddress))} | ${name(ctx, c.client)} | ${c.resolution} | ${at(ctx, c.evidence)} |`, 'query <generation> http'));
+  o.push(...capped(calls, (c) => `| ${c.method} | ${route(c)} | ${cell(baseText(c.baseAddress))} | ${name(ctx, c.client)} | ${c.resolution} | ${at(ctx, c.evidence)} |`, 'query <generation> http'));
   const rt = [...obs('realtime.connection'), ...obs('realtime.subscribe'), ...obs('realtime.invoke')].sort((a, b) => compareOrdinal(a.id, b.id));
   if (rt.length > 0) {
     o.push('', '## Real time', '');
     for (const r of rt) o.push(`- ${r.kind} ${r.route ? `\`${r.route}\`` : '(route unknown)'}${r.method ? ` method \`${r.method}\`` : ''} (${at(ctx, r.evidence)})`);
   }
-  o.push(...gaps(ctx, (d) => d.severity !== 'info', calls.filter((c) => c.resolution !== 'exact').map((c) => `- http.call ${c.method} \`${c.canonicalRoute}\` is ${c.resolution}: ${c.reason ?? ''} (${at(ctx, c.evidence)})`)));
+  o.push(...gaps(ctx, (d) => d.severity !== 'info', calls.filter((c) => c.resolution !== 'exact').map((c) => `- http.call ${c.method} ${route(c)} is ${c.resolution}: ${c.reason ?? ''} (${at(ctx, c.evidence)})`)));
   write('context/overview.md', o);
 
   // Project cards.
@@ -138,12 +143,12 @@ export function writePacks(outDir: string, set: RecordSet, commit: string, statu
     const pc = calls.filter(inProject);
     lines.push('', '## HTTP calls', '');
     if (pc.length === 0) lines.push('None.');
-    lines.push(...capped(pc, (x) => `- ${x.method} \`${x.canonicalRoute}\` base ${baseText(x.baseAddress)}, client ${name(ctx, x.client)}, ${x.resolution} (${at(ctx, x.evidence)})`, 'query <generation> http'));
+    lines.push(...capped(pc, (x) => `- ${x.method} ${route(x)} base ${baseText(x.baseAddress)}, client ${name(ctx, x.client)}, ${x.resolution} (${at(ctx, x.evidence)})`, 'query <generation> http'));
     const pkgs = ((p.packages as Rec[]) ?? []).filter((x) => x.direct);
     lines.push('', '## Packages (direct)', '');
     if (pkgs.length === 0) lines.push('None recorded (install did not run or the project has no package.json).');
     lines.push(...capped(pkgs, (x) => `- \`${x.id}@${x.version}\``, 'graph/projects.ndjson'));
-    lines.push(...gaps(ctx, (d) => d.scope === path || (d.scope as string).startsWith(path === '.' ? '' : path + '/'), pc.filter((x) => x.resolution !== 'exact').map((x) => `- http.call ${x.method} \`${x.canonicalRoute}\` is ${x.resolution}: ${x.reason ?? ''}`)));
+    lines.push(...gaps(ctx, (d) => d.scope === path || (d.scope as string).startsWith(path === '.' ? '' : path + '/'), pc.filter((x) => x.resolution !== 'exact').map((x) => `- http.call ${x.method} ${route(x)} is ${x.resolution}: ${x.reason ?? ''}`)));
     write(`context/projects/${slug(path)}.md`, lines);
   }
 
@@ -154,11 +159,11 @@ export function writePacks(outDir: string, set: RecordSet, commit: string, statu
     const e = ctx.entities.get(client);
     const consumers = obs('di.consumes').filter((x) => x.service === client).sort((a, b) => compareOrdinal(a.id, b.id));
     const lines: string[] = [`# Service ${e?.name ?? client}`, '', `Entity \`${client}\`, project \`${e?.project ?? '?'}\`.`, '', '## HTTP calls', ''];
-    lines.push(...capped(list, (x) => `- ${x.method} \`${x.canonicalRoute}\` (template \`${x.urlTemplate}\`), base ${baseText(x.baseAddress)}, from ${name(ctx, x.caller)}, ${x.resolution} (${at(ctx, x.evidence)})`, `query <generation> http`));
+    lines.push(...capped(list, (x) => `- ${x.method} ${route(x)} (template \`${x.urlTemplate}\`), base ${baseText(x.baseAddress)}, from ${name(ctx, x.caller)}, ${x.resolution} (${at(ctx, x.evidence)})`, `query <generation> http`));
     lines.push('', '## Injected into', '');
     if (consumers.length === 0) lines.push('No consumer found in the analysed code.');
     lines.push(...capped(consumers, (x) => `- ${name(ctx, x.consumer)} via ${x.via} (${at(ctx, x.evidence)})`, `query <generation> di ${client}`));
-    lines.push(...gaps(ctx, () => false, list.filter((x) => x.resolution !== 'exact').map((x) => `- ${x.method} \`${x.canonicalRoute}\` is ${x.resolution}: ${x.reason ?? ''}`)));
+    lines.push(...gaps(ctx, () => false, list.filter((x) => x.resolution !== 'exact').map((x) => `- ${x.method} ${route(x)} is ${x.resolution}: ${x.reason ?? ''}`)));
     write(`context/services/${slug(e?.name as string ?? 'service')}-${sha256Hex(client).slice(0, 8)}.md`, lines);
   }
   return written.sort(compareOrdinal);

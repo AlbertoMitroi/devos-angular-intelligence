@@ -65,9 +65,15 @@ export function compare(expected: Rec, dir: string, exitCode: number): string[] 
     sets(failures, 'source entities', expected.sourceEntities, actual);
   }
   const declarations = read(dir, 'graph/declarations.ndjson');
+  const spanText = (path: string, s: Rec) => `${path}:${s.startLine}:${s.startColumn}-${s.endLine}:${s.endColumn}`;
   for (const d of expected.declarations ?? []) {
-    sets(failures, `declarations of ${d.entity}`, d.at, declarations.filter((x) => x.entity === d.entity).map((x) => `${x.path}:${x.span.startLine}`));
+    const own = declarations.filter((x) => x.entity === d.entity);
+    if (d.at) sets(failures, `declarations of ${d.entity}`, d.at, own.map((x) => `${x.path}:${x.span.startLine}`));
+    // Name spans with UTF-16 columns (contract D9).
+    if (d.spans) sets(failures, `declaration spans of ${d.entity}`, d.spans, own.map((x) => spanText(x.path, x.span)));
   }
+  const evidenceSpans = new Set([...evidence.values()].map((e) => spanText(e.path, e.span)));
+  for (const s of expected.evidenceSpans ?? []) if (!evidenceSpans.has(s)) failures.push(`evidence span missing: ${s}`);
   const relations = read(dir, 'graph/relations.ndjson');
   for (const group of expected.relations ?? []) {
     const kinds = new Set<string>(group.kinds);
@@ -78,13 +84,22 @@ export function compare(expected: Rec, dir: string, exitCode: number): string[] 
   }
   const observations = read(dir, 'graph/observations.ndjson');
   const byId = new Map(observations.map((o) => [o.id, o]));
+  // refs: { "field.path": ["path:line", ...] }: the observations a field refers to, by their evidence location.
+  const refsMatch = (refs: Rec | undefined, o: Rec) =>
+    !refs ||
+    Object.entries(refs).every(([path, wanted]) => {
+      const v = path.split('.').reduce<any>((x, k) => (x == null ? undefined : x[k]), o);
+      const ids: string[] = v == null ? [] : [].concat(v);
+      const got = ids.map((id) => (byId.has(id) ? at(byId.get(id)!.evidence) : `?${id}`)).sort();
+      return JSON.stringify(got) === JSON.stringify([...(wanted as string[])].sort());
+    });
   for (const group of [].concat(expected.observations ?? [])) {
     const g = group as Rec;
     const kinds = new Set<string>(g.kinds);
     const remaining = observations.filter((o) => kinds.has(o.kind));
     for (const item of g.items ?? []) {
-      const { at: where, ...fields } = item;
-      const i = remaining.findIndex((o) => subsetEqual(fields, o) && (where === undefined || at(o.evidence) === where));
+      const { at: where, refs, ...fields } = item;
+      const i = remaining.findIndex((o) => subsetEqual(fields, o) && (where === undefined || at(o.evidence) === where) && refsMatch(refs, o));
       if (i < 0) {
         const near = remaining.filter((o) => o.kind === fields.kind && (where === undefined || at(o.evidence) === where));
         failures.push(`observation missing: ${JSON.stringify(item)}${near.length ? `\n    nearest at same place: ${JSON.stringify(near[0], (k, v) => (k === 'evidence' || k === 'id' ? undefined : v))}` : ''}`);

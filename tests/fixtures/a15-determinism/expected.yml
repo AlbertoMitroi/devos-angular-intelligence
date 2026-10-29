@@ -1,0 +1,37 @@
+# Fixture 15: determinism inputs: CRLF line endings, a UTF-8 BOM, non-ASCII identifiers and selectors, emoji
+# (two UTF-16 code units each) and a tab. Columns are UTF-16 code units (D9); the BOM is not a column.
+# verify.sh checks two identical runs; CI compares amd64 and arm64 byte for byte.
+exitCode: 0
+status: complete
+loadModes:
+  ".": semantic
+diagnostics: []
+sourceEntities:
+  - module ts:.:src/main#
+  - module ts:.:src/app/cafe.component#
+  - class ts:.:src/app/cafe.component#CaféComponent
+  - property ts:.:src/app/cafe.component#CaféComponent.emoji
+  - method ts:.:src/app/cafe.component#CaféComponent.greet
+declarations:
+  - entity: ts:.:src/app/cafe.component#CaféComponent
+    spans: [src/app/cafe.component.ts:4:14-4:27]
+  - entity: ts:.:src/app/cafe.component#CaféComponent.emoji
+    spans: [src/app/cafe.component.ts:5:3-5:8]
+  - entity: ts:.:src/app/cafe.component#CaféComponent.greet
+    spans: [src/app/cafe.component.ts:5:19-5:24]
+evidenceSpans:
+  - src/app/cafe.component.ts:3:53-3:58
+  - src/app/cafe.component.ts:6:17-6:22
+  - src/main.ts:2:10-2:23
+  - src/main.ts:4:22-4:35
+relations:
+  - kinds: [references]
+    from: "ts:.:src/app/cafe.component#"
+    to: "ts:."
+    items:
+      - references invocation ts:.:src/app/cafe.component#CaféComponent -> ts:.:src/app/cafe.component#CaféComponent.greet @src/app/cafe.component.ts:3
+      - references read ts:.:src/app/cafe.component#CaféComponent.greet -> ts:.:src/app/cafe.component#CaféComponent.emoji @src/app/cafe.component.ts:6
+observations:
+  kinds: [ui.component]
+  items:
+    - { kind: ui.component, component: ts:.:src/app/cafe.component#CaféComponent, selector: app-café, at: src/app/cafe.component.ts:3 }

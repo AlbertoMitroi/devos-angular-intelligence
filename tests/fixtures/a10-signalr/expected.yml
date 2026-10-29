@@ -1,0 +1,42 @@
+# Fixture 10: SignalR client: a hub URL from an environment base (D20), a subscription (.on) and two client calls
+# (.invoke and .send); each carries the evidence of the call and of the connection it uses.
+exitCode: 0
+status: complete
+loadModes:
+  ".": semantic
+diagnostics: []
+observations:
+  kinds: [realtime.connection, realtime.subscribe, realtime.invoke]
+  items:
+    - kind: realtime.connection
+      route: /hubs/orders
+      urlTemplate: /hubs/orders
+      baseAddress:
+        source: environment
+        key: environment.hubUrl
+        file: src/environments/environment.ts
+        values:
+          - { application: ".", configuration: default, file: src/environments/environment.ts, value: "https://realtime.example.test" }
+        nameSource: configuration
+      client: ts:.:src/app/orders-hub.service#OrdersHubService
+      resolution: exact
+      at: src/app/orders-hub.service.ts:11
+    - kind: realtime.subscribe
+      route: /hubs/orders
+      hub: /hubs/orders
+      method: OrderShipped
+      client: ts:.:src/app/orders-hub.service#OrdersHubService
+      resolution: exact
+      at: src/app/orders-hub.service.ts:11,src/app/orders-hub.service.ts:16
+    - kind: realtime.invoke
+      route: /hubs/orders
+      method: Subscribe
+      mode: invoke
+      resolution: exact
+      at: src/app/orders-hub.service.ts:11,src/app/orders-hub.service.ts:21
+    - kind: realtime.invoke
+      route: /hubs/orders
+      method: Ping
+      mode: send
+      resolution: exact
+      at: src/app/orders-hub.service.ts:11,src/app/orders-hub.service.ts:25

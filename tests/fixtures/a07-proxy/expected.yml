@@ -1,0 +1,39 @@
+# Fixture 7: dev-server proxy.conf.json (D20: the target is a destination stored with nameSource configuration);
+# a relative call under the proxy prefix takes the proxy target as base, one outside it keeps no base.
+exitCode: 0
+status: complete
+loadModes:
+  ".": semantic
+diagnostics: []
+observations:
+  kinds: [http.call, http.proxy]
+  items:
+    - kind: http.proxy
+      prefix: /api
+      target: "http://localhost:5080"
+      secret: false
+      file: proxy.conf.json
+      nameSource: configuration
+      at: proxy.conf.json:2
+    - kind: http.call
+      method: GET
+      urlTemplate: /api/orders
+      canonicalRoute: /api/orders
+      baseAddress:
+        source: proxy
+        prefix: /api
+        values:
+          - { application: ".", file: proxy.conf.json, value: "http://localhost:5080" }
+        nameSource: configuration
+      client: ts:.:src/app/status.service#StatusService
+      caller: ts:.:src/app/status.service#StatusService.orders
+      resolution: exact
+      at: proxy.conf.json:2,src/app/status.service.ts:9
+    - kind: http.call
+      method: GET
+      urlTemplate: /health
+      canonicalRoute: /health
+      baseAddress: null
+      caller: ts:.:src/app/status.service#StatusService.health
+      resolution: exact
+      at: src/app/status.service.ts:13

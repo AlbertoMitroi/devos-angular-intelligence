@@ -1,0 +1,33 @@
+# Fixture 8: template bindings: property and event bindings, a write in an event handler, signal calls,
+# a pipe, @let (a template local, not a member) and @switch blocks.
+exitCode: 0
+status: complete
+loadModes:
+  ".": semantic
+diagnostics: []
+relations:
+  - kinds: [references]
+    from: "ts:.:src/app/editor.component#EditorComponent"
+    to: "ts:."
+    items:
+      - references read ts:.:src/app/editor.component#EditorComponent -> ts:.:src/app/editor.component#EditorComponent.name @src/app/editor.component.html:1
+      - references write ts:.:src/app/editor.component#EditorComponent -> ts:.:src/app/editor.component#EditorComponent.name @src/app/editor.component.html:1
+      - references invocation ts:.:src/app/editor.component#EditorComponent -> ts:.:src/app/editor.component#EditorComponent.canSave @src/app/editor.component.html:2
+      - references invocation ts:.:src/app/editor.component#EditorComponent -> ts:.:src/app/editor.component#EditorComponent.save @src/app/editor.component.html:2
+      - references read ts:.:src/app/editor.component#EditorComponent -> ts:.:src/app/editor.component#EditorComponent.total @src/app/editor.component.html:4
+      - references invocation ts:.:src/app/editor.component#EditorComponent -> ts:.:src/app/editor.component#EditorComponent.mode @src/app/editor.component.html:5
+      - references invocation ts:.:src/app/editor.component#EditorComponent -> ts:.:src/app/editor.component#EditorComponent.reset @src/app/editor.component.html:6
+      - references read ts:.:src/app/editor.component#EditorComponent.canSave -> ts:.:src/app/editor.component#EditorComponent.name @src/app/editor.component.ts:13
+      - references read ts:.:src/app/editor.component#EditorComponent.save -> ts:.:src/app/editor.component#EditorComponent.total @src/app/editor.component.ts:16
+      - references write ts:.:src/app/editor.component#EditorComponent.save -> ts:.:src/app/editor.component#EditorComponent.total @src/app/editor.component.ts:16
+      - references write ts:.:src/app/editor.component#EditorComponent.reset -> ts:.:src/app/editor.component#EditorComponent.name @src/app/editor.component.ts:20
+observations:
+  kinds: [ui.component, ui.uses_component]
+  items:
+    - kind: ui.component
+      component: ts:.:src/app/editor.component#EditorComponent
+      selector: app-editor
+      template: src/app/editor.component.html
+      ext: { angular: { standalone: true, inlineTemplate: false } }
+      at: src/app/editor.component.ts:4
+links: []

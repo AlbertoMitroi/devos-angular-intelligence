@@ -390,14 +390,19 @@ export function emitHttpCalls(state: AnalysisState, pending: PendingCall[], prox
         }
       }
     }
-    if (parts.every((p) => p.kind !== 'literal') && !baseAddress) {
+    let urlTemplate = template;
+    let routeOut: string | null = route;
+    if (parts.every((p) => p.kind !== 'literal') && (!baseAddress || baseAddress.source === 'unknown')) {
+      // Nothing of the path is known: no route at all rather than '/' (unknown is not empty).
       resolution = 'unresolved';
-      reasons.push('the URL could not be folded to a template');
+      urlTemplate = render(call.parts);
+      routeOut = null;
+      if (!baseAddress) reasons.push('the URL could not be folded to a template');
     }
     const fields: Record<string, unknown> = {
       method: call.method,
-      urlTemplate: template,
-      canonicalRoute: route,
+      urlTemplate,
+      canonicalRoute: routeOut,
       baseAddress,
       client: call.client,
       caller: call.caller,

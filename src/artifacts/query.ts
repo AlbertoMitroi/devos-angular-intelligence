@@ -102,8 +102,8 @@ export function query(generation: string, args: string[]): QueryOutput {
         const prefix = flag('--route');
         const rows = all("select path, line, json from observations where kind = 'http.call' order by path, line")
           .map((x) => ({ ...JSON.parse(x.json), at: `${x.path}:${x.line}` }))
-          .filter((x) => !prefix || String(x.canonicalRoute).startsWith(prefix));
-        return list(rows, (x) => `${x.method} ${x.canonicalRoute}  ${x.resolution}  base ${x.baseAddress?.source ?? 'same-origin'}${x.baseAddress?.key ? ' ' + x.baseAddress.key : ''}  ${x.at}`, 'no HTTP calls');
+          .filter((x) => !prefix || (x.canonicalRoute != null && String(x.canonicalRoute).startsWith(prefix)));
+        return list(rows, (x) => `${x.method} ${x.canonicalRoute ?? '(unknown route)'}  ${x.resolution}  base ${x.baseAddress?.source ?? 'same-origin'}${x.baseAddress?.key ? ' ' + x.baseAddress.key : ''}  ${x.at}`, 'no HTTP calls');
       }
       case 'search': {
         const text = positional.join(' ');

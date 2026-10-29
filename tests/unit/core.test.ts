@@ -37,6 +37,7 @@ test('secret values and keys are redacted from snippet lines', () => {
   assert.equal(redactLine("  token: `eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.abcdefgh`"), '  token: `[redacted]`');
   assert.equal(redactLine("const x = 'AKIAABCDEFGHIJKLMNOP';"), "const x = '[redacted]';");
   assert.equal(redactLine('DB_PASSWORD=hunter2'), 'DB_PASSWORD=[redacted]');
+  assert.equal(redactLine("  private readonly fallbackKey = 'inline-value-0042';"), "  private readonly fallbackKey = '[redacted]';");
   assert.ok(isSecret('url', 'https://user:pw@host.test/x'));
   assert.ok(!isSecret('clientId', 'Web'));
 });

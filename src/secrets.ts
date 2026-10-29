@@ -1,7 +1,7 @@
-// Secret detection (rule 1.4.6): by key name and by value shape. Shared by snippet redaction, config.key flags
+// Secret detection (rule 1.4.6): by key name and by value shape (any name ending in `key` counts: over-redaction is safe). Shared by snippet redaction, config.key flags
 // and destination values (D20), so a value is either stored nowhere or flagged nowhere.
 
-const SECRET_KEY = /(pass(word|wd)?$|^pwd$|secret|token|api[-_]?key|apikey|private[-_]?key|credential|connection[-_]?string|auth[-_]?key|signing[-_]?key|^salt$|access[-_]?key|sas$)/i;
+const SECRET_KEY = /(pass(word|wd)?$|^pwd$|secret|token|api[-_]?key|apikey|private[-_]?key|credential|connection[-_]?string|auth[-_]?key|signing[-_]?key|^salt$|access[-_]?key|sas$|key$)/i;
 
 export function isSecretKey(key: string): boolean {
   return SECRET_KEY.test(key);

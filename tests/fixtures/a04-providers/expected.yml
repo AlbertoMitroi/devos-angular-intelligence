@@ -1,0 +1,75 @@
+# Fixture 4: providers in every form (class, useExisting, useValue, useClass, useFactory) at component and
+# application level (an ApplicationConfig constant), @Inject(token) and inject(); a token with two providers
+# is ambiguous (the injector hierarchy decides at run time).
+exitCode: 0
+status: complete
+loadModes:
+  ".": semantic
+diagnostics: []
+relations:
+  - kinds: [inherits, overrides, implements]
+    items:
+      - inherits ts:.:src/app/tokens#ConsoleLogger -> ts:.:src/app/tokens#Logger @src/app/tokens.ts:9
+      - overrides ts:.:src/app/tokens#ConsoleLogger.log -> ts:.:src/app/tokens#Logger.log @src/app/tokens.ts:10
+  - kinds: [calls_declared_target, possible_runtime_target]
+    from: "ts:.:src/app/app.component#AppComponent"
+    to: "ts:."
+    items:
+      - calls_declared_target ts:.:src/app/app.component#AppComponent.constructor -> ts:.:src/app/tokens#Logger.log @src/app/app.component.ts:13
+      - calls_declared_target ts:.:src/app/app.component#AppComponent.constructor -> ts:.:src/app/tokens#Clock.now @src/app/app.component.ts:13
+      - possible_runtime_target ts:.:src/app/app.component#AppComponent.constructor -> ts:.:src/app/tokens#ConsoleLogger.log @src/app/app.component.ts:13
+observations:
+  kinds: [di.registers, di.consumes]
+  items:
+    - kind: di.registers
+      service: ts:.:src/app/tokens#ConsoleLogger
+      implementation: ts:.:src/app/tokens#ConsoleLogger
+      lifetime: component
+      registrationPath: ts:.:src/app/app.component#AppComponent
+      at: src/app/app.component.ts:7
+    - kind: di.registers
+      service: ts:.:src/app/tokens#Logger
+      implementation: null
+      existing: ts:.:src/app/tokens#ConsoleLogger
+      value: false
+      lifetime: component
+      registrationPath: ts:.:src/app/app.component#AppComponent
+      at: src/app/app.component.ts:7
+    - kind: di.registers
+      service: ts:.:src/app/tokens#API_URL
+      implementation: null
+      value: true
+      lifetime: environment
+      at: src/app/app.config.ts:6
+    - kind: di.registers
+      service: ts:.:src/app/tokens#Logger
+      implementation: ts:.:src/app/tokens#ConsoleLogger
+      existing: null
+      lifetime: environment
+      at: src/app/app.config.ts:7
+    - kind: di.registers
+      service: ts:.:src/app/tokens#Clock
+      implementation: null
+      factory: ts:.:src/app/tokens#clockFactory
+      lifetime: environment
+      at: src/app/app.config.ts:8
+    - kind: di.consumes
+      service: ts:.:src/app/tokens#Clock
+      consumer: ts:.:src/app/app.component#AppComponent
+      via: inject
+      at: src/app/app.component.ts:10
+    - kind: di.consumes
+      service: ts:.:src/app/tokens#API_URL
+      consumer: ts:.:src/app/app.component#AppComponent
+      via: constructor
+      at: src/app/app.component.ts:12
+    - kind: di.consumes
+      service: ts:.:src/app/tokens#Logger
+      consumer: ts:.:src/app/app.component#AppComponent
+      via: constructor
+      at: src/app/app.component.ts:12
+links:
+  - di consumes_contract exact src/app/app.component.ts:10 -> src/app/app.config.ts:8
+  - di consumes_contract exact src/app/app.component.ts:12 -> src/app/app.config.ts:6
+  - di consumes_contract ambiguous src/app/app.component.ts:12 -> src/app/app.component.ts:7
+  - di consumes_contract ambiguous src/app/app.component.ts:12 -> src/app/app.config.ts:7

@@ -1,3 +1,28 @@
-# Fixture 13 (draft)
+# Fixture 13: install fails (a dependency missing from the lockfile and the registry): the project falls back to
+# the parser (syntax mode), the generation is partial (exit code 10) and says why; what the parser sees is kept.
 exitCode: 10
 status: partial
+loadModes:
+  ".": syntax
+diagnostics:
+  - install-failed@.
+  - syntax-fallback@.
+sourceEntities:
+  - module ts:.:src/main#
+  - module ts:.:src/app/base#
+  - module ts:.:src/app/widget.component#
+  - class ts:.:src/app/base#Base
+  - method ts:.:src/app/base#Base.render
+  - class ts:.:src/app/widget.component#WidgetComponent
+  - method ts:.:src/app/widget.component#WidgetComponent.render
+relations:
+  - kinds: [inherits]
+    items:
+      - inherits ts:.:src/app/widget.component#WidgetComponent -> ts:.:src/app/base#Base @src/app/widget.component.ts:8
+observations:
+  kinds: [ui.component]
+  items:
+    - kind: ui.component
+      component: ts:.:src/app/widget.component#WidgetComponent
+      selector: app-widget
+      at: src/app/widget.component.ts:4

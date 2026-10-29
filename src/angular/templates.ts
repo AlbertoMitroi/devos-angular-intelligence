@@ -184,7 +184,7 @@ function walkTemplate(ex: Extractor, index: AngularIndex, ng: any, component: Di
     return [...new Map(out.map((d) => [d.entity, d])).values()].sort((a, b) => compareOrdinal(a.entity, b.entity));
   };
 
-  const childrenOf = (n: any): any[] => [...(n.children ?? []), ...(n.branches ?? []), ...(n.cases ?? []), n.empty, n.placeholder, n.loading, n.error].filter(Boolean);
+  const childrenOf = (n: any): any[] => [...(n.children ?? []), ...(n.branches ?? []), ...(n.groups ?? []), ...(n.cases ?? []), n.empty, n.placeholder, n.loading, n.error].filter(Boolean);
 
   const visitNodes = (nodes: any[], inherited: Set<string>) => {
     const locals = new Set(inherited);

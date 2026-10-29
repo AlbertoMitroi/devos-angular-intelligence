@@ -1,0 +1,36 @@
+# Fixture 12: an environment file with secrets next to a base URL. Secret keys and values never reach any output
+# (graph, snippets, context packs, index); config.key carries keys only; the base URL is a destination (D20).
+exitCode: 0
+status: complete
+loadModes:
+  ".": semantic
+diagnostics: []
+observations:
+  kinds: [config.key, http.call]
+  items:
+    - { kind: config.key, key: environment.apiUrl, file: src/environments/environment.ts, secret: false, configurations: [default], at: src/environments/environment.ts:2 }
+    - { kind: config.key, key: environment.apiKey, file: src/environments/environment.ts, secret: true, at: src/environments/environment.ts:3 }
+    - { kind: config.key, key: environment.auth.clientId, secret: false, at: src/environments/environment.ts:5 }
+    - { kind: config.key, key: environment.auth.clientSecret, secret: true, at: src/environments/environment.ts:6 }
+    - { kind: config.key, key: environment.auth.password, secret: true, at: src/environments/environment.ts:7 }
+    - { kind: config.key, key: environment.analyticsToken, secret: true, at: src/environments/environment.ts:9 }
+    - kind: http.call
+      method: GET
+      urlTemplate: /reports
+      canonicalRoute: /reports
+      baseAddress:
+        source: environment
+        key: environment.apiUrl
+        file: src/environments/environment.ts
+        values:
+          - { application: ".", configuration: default, file: src/environments/environment.ts, value: "https://api.example.test" }
+        nameSource: configuration
+      caller: ts:.:src/app/reports.component#ReportsComponent.load
+      resolution: exact
+      at: src/app/reports.component.ts:12
+secretsAbsent:
+  - fixture-api-key-7f3a9c1e
+  - fixture-client-secret-b81d
+  - fixture-password-55aa
+  - fixturetoken0123456789abcdefABCDEF0123
+  - fixture-inline-secret-key-0042
