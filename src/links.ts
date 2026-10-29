@@ -27,8 +27,11 @@ export function buildLinks(gen: Generation): void {
       gen.addLink('consumes_contract', 'di', c, null, 'unresolved', ev(c), fromPackage ? 'the token comes from a package; its providers are not analysed' : 'no provider of this token was found in the analysed code');
       continue;
     }
-    const resolution: Resolution = candidates.length === 1 ? 'exact' : 'ambiguous';
-    for (const r of candidates) gen.addLink('consumes_contract', 'di', c, r, resolution, ev(c, r));
+    // A component's own providers (or viewProviders) answer its own injections first: the element injector wins.
+    const own = candidates.filter((r) => r.lifetime === 'component' && r.registrationPath === c.consumer);
+    const targets = own.length > 0 ? own : candidates;
+    const resolution: Resolution = targets.length === 1 ? 'exact' : 'ambiguous';
+    for (const r of targets) gen.addLink('consumes_contract', 'di', c, r, resolution, ev(c, r));
   }
 
   // In-process dispatch: inprocess.send -> inprocess.handler by request (fan-out: every handler receives the action, D18).

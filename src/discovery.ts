@@ -95,20 +95,52 @@ export function discover(root: string, paths: string[]): Discovery {
     }
   };
   const has = (p: string) => files.has(p);
+  // Workspace roots (npm and yarn `workspaces`, pnpm-workspace.yaml) with the patterns of their members.
+  const workspaceRoots = new Map<string, { file: string; patterns: string[]; regexes: RegExp[] }>();
+  for (const file of [...files].filter((p) => p === 'package.json' || p.endsWith('/package.json') || p === 'pnpm-workspace.yaml' || p.endsWith('/pnpm-workspace.yaml')).sort(compareOrdinal)) {
+    const dir = parentDir(file);
+    let patterns: string[] = [];
+    if (file.endsWith('pnpm-workspace.yaml')) {
+      try {
+        const y = parseYaml(readFileSync(join(root, file), 'utf8')) as any;
+        patterns = Array.isArray(y?.packages) ? y.packages.filter((p: unknown) => typeof p === 'string') : [];
+      } catch (e) {
+        problems.push({ code: 'config-unreadable', scope: file, message: `'${file}' could not be parsed: ${(e as Error).message}` });
+      }
+    } else {
+      const json = read(file) as any;
+      const ws = json?.workspaces;
+      patterns = Array.isArray(ws) ? ws : Array.isArray(ws?.packages) ? ws.packages : [];
+    }
+    patterns = patterns.filter((p) => typeof p === 'string' && !p.startsWith('!'));
+    if (patterns.length === 0) continue;
+    const regexes = patterns.map((pattern) => new RegExp('^' + joinRepo(dir, pattern).split('/').map((s) => (s === '**' ? '.*' : s.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '[^/]*'))).join('/') + '$'));
+    const existing = workspaceRoots.get(dir);
+    if (existing) {
+      existing.patterns.push(...patterns);
+      existing.regexes.push(...regexes);
+    } else workspaceRoots.set(dir, { file, patterns, regexes });
+  }
+  /**
+   * Where a project's dependencies are installed: the nearest package.json at or above it, unless an ancestor
+   * declares that package as a workspace member (then the workspace root). A lockfile in an unrelated ancestor
+   * does not apply: npm, yarn and pnpm install a nested package on its own.
+   */
   const installRootOf = (dir: string): string => {
-    let d = dir;
-    for (;;) {
-      if (LOCKFILES.some((l) => has(joinRepo(d, l)))) return d;
+    let nearest: string | null = null;
+    for (let d = dir; ; d = parentDir(d)) {
+      if (has(joinRepo(d, 'package.json'))) {
+        nearest = d;
+        break;
+      }
       if (d === '.') break;
-      d = parentDir(d);
     }
-    // No lockfile: the nearest package.json.
-    d = dir;
-    for (;;) {
-      if (has(joinRepo(d, 'package.json'))) return d;
-      if (d === '.') return dir;
+    if (nearest === null) return dir;
+    for (let d = nearest; d !== '.'; ) {
       d = parentDir(d);
+      if (workspaceRoots.get(d)?.regexes.some((r) => r.test(nearest!))) return d;
     }
+    return nearest;
   };
   const firstExisting = (dir: string, names: string[]): string | null => {
     for (const n of names) if (has(joinRepo(dir, n))) return joinRepo(dir, n);
@@ -214,23 +246,8 @@ export function discover(root: string, paths: string[]): Discovery {
     directories.add(d);
     if (d === '.') break;
   }
-  for (const file of [...files].filter((p) => p === 'package.json' || p.endsWith('/package.json') || p === 'pnpm-workspace.yaml' || p.endsWith('/pnpm-workspace.yaml')).sort(compareOrdinal)) {
-    const dir = parentDir(file);
-    let patterns: string[] = [];
-    if (file.endsWith('pnpm-workspace.yaml')) {
-      try {
-        const y = parseYaml(readFileSync(join(root, file), 'utf8')) as any;
-        patterns = Array.isArray(y?.packages) ? y.packages.filter((p: unknown) => typeof p === 'string') : [];
-      } catch (e) {
-        problems.push({ code: 'config-unreadable', scope: file, message: `'${file}' could not be parsed: ${(e as Error).message}` });
-      }
-    } else {
-      const json = read(file) as any;
-      const ws = json?.workspaces;
-      patterns = Array.isArray(ws) ? ws : Array.isArray(ws?.packages) ? ws.packages : [];
-    }
-    for (const pattern of patterns.filter((p) => !p.startsWith('!'))) {
-      const regex = new RegExp('^' + joinRepo(dir, pattern).split('/').map((s) => (s === '**' ? '.*' : s.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '[^/]*'))).join('/') + '$');
+  for (const [dir, ws] of [...workspaceRoots].sort(([a], [b]) => compareOrdinal(a, b))) {
+    for (const regex of ws.regexes) {
       for (const candidate of [...directories].sort(compareOrdinal)) {
         if (!regex.test(candidate) || projects.has(candidate) || !has(joinRepo(candidate, 'package.json'))) continue;
         const tsConfig = firstExisting(candidate, ['tsconfig.lib.json', 'tsconfig.app.json', 'tsconfig.json']);

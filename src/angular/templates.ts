@@ -9,6 +9,9 @@ import { type AngularIndex, type DirectiveMeta, resolveRelative } from './compon
 import { prop, stringValue, unwrap } from './common.ts';
 import { compareOrdinal } from '../util/canonical.ts';
 
+/** Angular's own structural elements: never components, so never an unresolved component use. */
+const BUILT_IN_ELEMENTS = new Set(['ng-container', 'ng-content', 'ng-template']);
+
 interface Mapper {
   path: string;
   span(start: number, end: number): Span;
@@ -217,7 +220,7 @@ function walkTemplate(ex: Extractor, index: AngularIndex, ng: any, component: Di
           ex.observe('ui.uses_directive', { from: componentEntity, selector: d.selector, to: d.entity }, [ev()]);
         }
       }
-      if (isElement && !component && matched.length === 0 && n.name.includes('-') && !n.name.startsWith(':')) {
+      if (isElement && !component && matched.length === 0 && n.name.includes('-') && !n.name.startsWith(':') && !BUILT_IN_ELEMENTS.has(n.name)) {
         ex.observe('ui.uses_component', { from: componentEntity, selector: n.name, to: 'unresolved', reason: known ? 'no component in the template scope matches this element' : 'the template scope is unknown (no declaring NgModule found)' }, [ev()]);
       }
       for (const i of n.inputs ?? []) visitExpression(i.value, locals);

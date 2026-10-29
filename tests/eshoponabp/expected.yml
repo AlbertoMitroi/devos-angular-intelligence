@@ -301,3 +301,9 @@ observations:
         component: ts:apps/angular/projects/ordering:apps/angular/projects/ordering/src/pages/orders/orders.component#OrdersComponent
         loadChildren: null
         at: apps/angular/projects/ordering/src/pages/orders/orders-routing.module.ts:5
+      # Added after the first comparison (ground-truth.md, correction): DashboardModule imports ProductRoutingModule.
+      - kind: ui.route
+        path: /ordering
+        component: ts:apps/angular/projects/catalog:apps/angular/projects/catalog/src/pages/product/product.component#ProductComponent
+        loadChildren: null
+        at: apps/angular/projects/catalog/src/pages/product/product-routing.module.ts:9

@@ -74,7 +74,7 @@ Format per entry: context, options, choice, reason, how to revisit. Status `acce
 ## A9: Observation and link kinds outside contract v1.1
 
 - **Context:** Angular has concepts the v1.1 kind list does not name.
-- **Choice:** emit them, as contract compatibility rule 4 allows: observations `ui.component`, `ui.directive`, `ui.pipe`, `ui.module`, `ui.uses_component`, `ui.uses_directive`, `ui.route`, `http.interceptor`, `http.proxy`, `realtime.connection`, `realtime.subscribe`, `realtime.invoke`, `state.action`, `inprocess.send`, `inprocess.handler`; link `renders` (via `ui`) and `dispatches_to` (via `inprocess`). `verify` prints each as a note with its count.
+- **Choice:** contract v1.1 already names `ui.component`, `ui.uses_component`, `ui.route`, `realtime.subscribe`, `inprocess.send`, `inprocess.handler` and the link `dispatches_to`; the engine uses those as defined. It also emits, as compatibility rule 4 allows, observations `ui.directive`, `ui.pipe`, `ui.module`, `ui.uses_directive`, `http.interceptor`, `http.proxy`, `realtime.connection`, `realtime.invoke` (client to server; v1.1 `realtime.send` is the server side), `state.action`, and the link `renders` (via `ui`, which v1.1 allows). `verify` prints each of these as a note with its count (fixtures 1 to 15: nine such kinds seen).
 - **Revisit:** propose them to the contract owner for v1.2 (to ask before any edit of intelligence-contract).
 - **Status:** proposed.
 
@@ -87,7 +87,7 @@ Format per entry: context, options, choice, reason, how to revisit. Status `acce
 
 ## A11: DI links
 
-- **Choice:** `di.consumes` links to every `di.registers` of the same token: one provider gives `exact`, several give `ambiguous` (the injector hierarchy decides at run time, fixture 4); a token from a package gives `unresolved` with reason "the token comes from a package; its providers are not analysed"; a source token without provider gives `unresolved` with its own reason (fixture 3).
+- **Choice:** `di.consumes` links to every `di.registers` of the same token: one provider gives `exact`, several give `ambiguous` (the injector hierarchy decides at run time). Exception: when the consuming component lists the token in its own `providers` or `viewProviders`, that registration alone is the target, `exact` (its element injector answers first; fixture 4, and the ABP `providers: [ListService]` pattern in eShopOnAbp); a token from a package gives `unresolved` with reason "the token comes from a package; its providers are not analysed"; a source token without provider gives `unresolved` with its own reason (fixture 3).
 - **Status:** accepted.
 
 ## A12: Route paths

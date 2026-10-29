@@ -33,7 +33,9 @@ Base address: `apiName` is the class property `apiName = 'Catalog'` (product ser
 - Default configuration: `environment.apis.Catalog.url` = `https://localhost:44354`, `environment.apis.Ordering.url` = `https://localhost:44356`.
 - `production`: `environment.prod.ts` has only `apis.default` (`https://localhost:44394`) and a `remoteEnv` (`/getEnvConfig`, `deepmerge`) merged at run time. The production base cannot be known from the repository: the expected resolution is `candidate`, with a reason naming the missing key.
 
-## Routes: 15, all reached from `RouterModule.forRoot` (none unreached)
+## Routes: 16, all reached from `RouterModule.forRoot` (none unreached)
+
+Correction after the first comparison (commit history keeps the original): the first version listed 15 and missed one. `projects/ordering/src/pages/dashboard/dashboard.module.ts:18` imports `ProductRoutingModule`, so its `forChild` routes join the lazy `/ordering` module: `ProductComponent` is also configured at `/ordering` (after `DashboardComponent`, which matches first). The engine reported it; reading the module imports confirmed it.
 
 | Full path | Target | Declared in |
 |---|---|---|
@@ -51,6 +53,7 @@ Base address: `apiName` is the class property `apiName = 'Catalog'` (product ser
 | `/ordering` | `loadChildren` `DashboardModule` (pathMatch full) | `projects/ordering/src/ordering-routing.module.ts:6` |
 | `/ordering/orders` | `loadChildren` `OrdersModule` | `projects/ordering/src/ordering-routing.module.ts:11` |
 | `/ordering` | `DashboardComponent` (guard commented out) | `projects/ordering/src/pages/dashboard/dashboard-routing.module.ts:7` |
+| `/ordering` | `ProductComponent`, `canActivate` `AuthGuard`, `PermissionGuard`, through `DashboardModule` importing `ProductRoutingModule` (added after the first comparison) | `projects/catalog/src/pages/product/product-routing.module.ts:9` |
 | `/ordering/orders` | `OrdersComponent` | `projects/ordering/src/pages/orders/orders-routing.module.ts:5` |
 
 The four ABP package modules' own routes live in `node_modules` and are outside the repository.

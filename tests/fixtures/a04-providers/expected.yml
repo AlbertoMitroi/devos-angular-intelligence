@@ -1,6 +1,6 @@
 # Fixture 4: providers in every form (class, useExisting, useValue, useClass, useFactory) at component and
-# application level (an ApplicationConfig constant), @Inject(token) and inject(); a token with two providers
-# is ambiguous (the injector hierarchy decides at run time).
+# application level (an ApplicationConfig constant), @Inject(token) and inject(). Logger has two providers; the
+# component's own providers answer its own injections first (element injector), so that link is exact.
 exitCode: 0
 status: complete
 loadModes:
@@ -71,5 +71,4 @@ observations:
 links:
   - di consumes_contract exact src/app/app.component.ts:10 -> src/app/app.config.ts:8
   - di consumes_contract exact src/app/app.component.ts:12 -> src/app/app.config.ts:6
-  - di consumes_contract ambiguous src/app/app.component.ts:12 -> src/app/app.component.ts:7
-  - di consumes_contract ambiguous src/app/app.component.ts:12 -> src/app/app.config.ts:7
+  - di consumes_contract exact src/app/app.component.ts:12 -> src/app/app.component.ts:7

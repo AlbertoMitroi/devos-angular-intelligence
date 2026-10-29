@@ -40,12 +40,16 @@ Every NDJSON file: one canonical JSON object per line (keys sorted ordinally, no
 | `di.consumes` | yes | `service`, `consumer`, `via` (`constructor`, `inject`), `ext.angular.flags` |
 | `http.call` | yes | `method`, `urlTemplate`, `canonicalRoute` (null when nothing of the path is known, A13), `baseAddress` (`source`: `environment`, `literal`, `interceptor`, `proxy`, `convention`, `unknown`; values per configuration, D20), `client`, `caller`, `resolution`, `reason` |
 | `config.key` | yes | `key`, `file`, `secret`, `configurations` (never the value) |
-| `ui.component`, `ui.directive`, `ui.pipe`, `ui.module` | no (A9) | entity, selector or name, template, `ext.angular` (standalone, imports, declarations, exports) |
-| `ui.uses_component`, `ui.uses_directive` | no (A9) | `from`, `selector`, `to` (entity or `unresolved` with `reason`) |
-| `ui.route` | no (A9) | `path` (full, or null with `ext.angular.relativePath` and reason), `component`, `loadComponent`, `loadChildren`, `redirectTo`, `guards`, `resolvers` |
+| `ui.component` | yes | entity, `selector`, `template`, `ext.angular` (standalone, imports) |
+| `ui.directive`, `ui.pipe`, `ui.module` | no (A9) | entity, selector or name, template, `ext.angular` (standalone, imports, declarations, exports) |
+| `ui.uses_component` | yes | `from`, `selector`, `to` (entity or `unresolved` with `reason`) |
+| `ui.uses_directive` | no (A9) | `from`, `selector`, `to` (entity or `unresolved` with `reason`) |
+| `ui.route` | yes | `path` (full, or null with `ext.angular.relativePath` and reason), `component`, `loadComponent`, `loadChildren`, `redirectTo`, `guards`, `resolvers` |
 | `http.interceptor`, `http.proxy` | no (A9) | interceptor entity, `urlPrefix`, `registered`; proxy `prefix`, `target` (D20), `secret`, `pathRewrite` |
-| `realtime.connection`, `realtime.subscribe`, `realtime.invoke` | no (A9) | hub `route`, `urlTemplate`, `baseAddress`, `method`, `mode` (`invoke`, `send`, `stream`) |
-| `state.action`, `inprocess.send`, `inprocess.handler` | no (A9) | NgRx action entity and type; sender; handler with `ext.ngrx.role` (`effect` with `calls` and reached `httpCalls`, or `reducer`) |
+| `realtime.subscribe` | yes | hub `route`, `hub`, `method` |
+| `realtime.connection`, `realtime.invoke` | no (A9) | hub `route`, `urlTemplate`, `baseAddress`, `method`, `mode` (`invoke`, `send`, `stream`) |
+| `inprocess.send`, `inprocess.handler` | yes | NgRx: action entity as `request`; sender; handler with `ext.ngrx.role` (`effect` with `calls` and reached `httpCalls`, or `reducer`) |
+| `state.action` | no (A9) | NgRx `action` entity, `type`, `mechanism` |
 
 Unknown kinds follow compatibility rule 4: consumers keep them and exclude them from traversal; `verify` reports each as a note.
 
@@ -53,9 +57,9 @@ Unknown kinds follow compatibility rule 4: consumers keep them and exclude them 
 
 | Kind | Via | Rule |
 |---|---|---|
-| `consumes_contract` | `di` | consumer token to every provider of the token: one is `exact`, several `ambiguous`; none is `unresolved` with a reason (A11) |
+| `consumes_contract` | `di` | consumer token to every provider of the token: one is `exact`, several `ambiguous`, the consumer component's own provider alone `exact`; none is `unresolved` with a reason (A11) |
 | `renders` | `ui` (A9) | `ui.uses_component` to the used `ui.component` |
-| `dispatches_to` | `inprocess` (A9) | `inprocess.send` to every `inprocess.handler` of the action (fan-out, contract D18) |
+| `dispatches_to` | `inprocess` | `inprocess.send` to every `inprocess.handler` of the action (fan-out, contract D18) |
 
 HTTP and SignalR calls are linked to backends by federation (outside the engine), through `canonicalRoute` and `baseAddress`.
 

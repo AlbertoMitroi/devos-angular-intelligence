@@ -1,5 +1,5 @@
 # Fixture 8: template bindings: property and event bindings, a write in an event handler, signal calls,
-# a pipe, @let (a template local, not a member) and @switch blocks.
+# a pipe, @let (a template local, not a member), @switch blocks, and <ng-container> (built in, never a component use).
 exitCode: 0
 status: complete
 loadModes:
@@ -17,6 +17,7 @@ relations:
       - references read ts:.:src/app/editor.component#EditorComponent -> ts:.:src/app/editor.component#EditorComponent.total @src/app/editor.component.html:4
       - references invocation ts:.:src/app/editor.component#EditorComponent -> ts:.:src/app/editor.component#EditorComponent.mode @src/app/editor.component.html:5
       - references invocation ts:.:src/app/editor.component#EditorComponent -> ts:.:src/app/editor.component#EditorComponent.reset @src/app/editor.component.html:6
+      - references read ts:.:src/app/editor.component#EditorComponent -> ts:.:src/app/editor.component#EditorComponent.name @src/app/editor.component.html:9
       - references read ts:.:src/app/editor.component#EditorComponent.canSave -> ts:.:src/app/editor.component#EditorComponent.name @src/app/editor.component.ts:13
       - references read ts:.:src/app/editor.component#EditorComponent.save -> ts:.:src/app/editor.component#EditorComponent.total @src/app/editor.component.ts:16
       - references write ts:.:src/app/editor.component#EditorComponent.save -> ts:.:src/app/editor.component#EditorComponent.total @src/app/editor.component.ts:16

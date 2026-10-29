@@ -1,13 +1,14 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { readFileSync, readdirSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { canonical, recordId, gitBlobId } from '../../src/util/canonical.ts';
 import { redactLine, isSecret } from '../../src/secrets.ts';
 import { canonicalRoute, splitUrl } from '../../src/angular/fold.ts';
-import { readJsonc, norm, joinRepo } from '../../src/discovery.ts';
+import { readJsonc, norm, joinRepo, discover } from '../../src/discovery.ts';
 import { stripCredentials } from '../../src/workingcopy.ts';
 import { validate, schema } from '../../src/artifacts/schema.ts';
 import { tail } from '../../src/install.ts';
@@ -83,4 +84,29 @@ test('vendored contract schema has not drifted from schema/VENDOR.json', () => {
     const sha = createHash('sha256').update(readFileSync(join(root, 'schema', 'v1', f))).digest('hex');
     assert.equal(sha, vendor.files[f], `${f} differs from intelligence-contract ${vendor.commit}`);
   }
+});
+
+test('install root: an unrelated ancestor lockfile does not apply; a workspace root does', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'ai-discovery-'));
+  const files: Record<string, string> = {
+    // Root package with its own lockfile, not a workspace (eShopOnAbp has this shape).
+    'package.json': '{"dependencies":{"left-pad":"1.3.0"}}',
+    'yarn.lock': '',
+    'apps/web/package.json': '{"name":"web"}',
+    'apps/web/angular.json': '{"version":1,"projects":{"web":{"projectType":"application","root":"","sourceRoot":"src","architect":{"build":{"options":{"tsConfig":"tsconfig.app.json"}}}}}}',
+    'apps/web/tsconfig.app.json': '{}',
+    // A real workspace: its member installs at the workspace root.
+    'tools/package.json': '{"private":true,"workspaces":["packages/*"]}',
+    'tools/package-lock.json': '{}',
+    'tools/packages/lib/package.json': '{"name":"lib"}',
+    'tools/packages/lib/tsconfig.json': '{}',
+  };
+  for (const [path, text] of Object.entries(files)) {
+    mkdirSync(dirname(join(dir, path)), { recursive: true });
+    writeFileSync(join(dir, path), text);
+  }
+  const found = discover(dir, Object.keys(files).sort());
+  const byPath = new Map(found.projects.map((p) => [p.path, p.installRoot]));
+  assert.equal(byPath.get('apps/web'), 'apps/web');
+  assert.equal(byPath.get('tools/packages/lib'), 'tools');
 });

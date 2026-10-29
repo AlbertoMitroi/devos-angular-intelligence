@@ -307,12 +307,13 @@ export function emitHttpCalls(state: AnalysisState, pending: PendingCall[], prox
     if (call.conventionBase) {
       const apps = state.appsIncluding(call.file);
       const envFiles = [...new Set(apps.flatMap((a) => [a.defaultFile, ...a.configurations.map((c) => c.file)]))];
-      const values = state.env.values(apps, null, call.conventionBase.key).map(toBaseValue);
-      const found = values.length > 0 && state.env.values(apps, null, call.conventionBase.key).every((v) => v.found);
+      const raw = state.env.values(apps, null, call.conventionBase.key);
+      const values = raw.map(toBaseValue);
+      const missing = [...new Set(raw.filter((v) => !v.found).map((v) => v.file))].sort(compareOrdinal);
       baseAddress = { source: 'convention', key: call.conventionBase.key, values, nameSource: 'configuration' };
-      if (!found) {
+      if (raw.length === 0 || missing.length > 0) {
         resolution = 'candidate';
-        reasons.push(apps.length === 0 ? 'no application includes this file, so its environment is unknown' : `environment key '${call.conventionBase.key}' is missing in ${envFiles.length} environment file(s) of the including applications`);
+        reasons.push(apps.length === 0 ? 'no application includes this file, so its environment is unknown' : `environment key '${call.conventionBase.key}' is missing in ${missing.length} of ${envFiles.length} environment file(s) of the including applications (${missing.join(', ')})`);
       }
       const bp = basePath(values);
       if (bp) prefixPath = bp;

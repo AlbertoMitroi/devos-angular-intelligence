@@ -44,6 +44,8 @@ The expectations were written from the fixture sources before comparing. Four mi
 | a12 | `'fixture-inline-secret-key-0042'` in `snippets.ndjson` and `index.sqlite` | `fallbackKey` not recognised as a secret key | names ending in `key` are secret (A6) |
 | a14 | ids `ts:apps/admin:apps/admin/src/...` | expectation error: contract v1.1 defines the module path as repository-relative | `expected.yml` and A8 corrected |
 
+After the eShopOnAbp run (Step 4 report), fixture 4 now expects the component's own provider as the single `exact` target, and fixture 8 contains an `<ng-container>`; `verify.sh` passed again with 15 of 15 fixtures and 10 of 10 unit tests on 2026-10-30.
+
 ## Not verified here
 
 - amd64, and the amd64 versus arm64 byte comparison (CI).
