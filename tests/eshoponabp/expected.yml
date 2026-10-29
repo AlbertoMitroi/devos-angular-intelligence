@@ -1,0 +1,303 @@
+# eShopOnAbp apps/angular at 7bfed7a3: the ground truth of ground-truth.md as comparator input (written before the run).
+# Run: analyze with tests/eshoponabp/config.yml, then node tests/check-expected.ts tests/eshoponabp/expected.yml <generation> <exit>.
+loadModes:
+  apps/angular: semantic
+  apps/angular/projects/catalog: semantic
+  apps/angular/projects/ordering: semantic
+observations:
+  - kinds: [http.call]
+    items:
+      - kind: http.call
+        method: GET
+        canonicalRoute: /api/catalog/public-product/{}
+        baseAddress:
+          source: convention
+          key: environment.apis.Catalog.url
+          values:
+            - { application: apps/angular, configuration: default, file: apps/angular/src/environments/environment.ts, value: "https://localhost:44354" }
+            - { application: apps/angular, configuration: production, file: apps/angular/src/environments/environment.prod.ts }
+        caller: ts:apps/angular/projects/catalog:apps/angular/projects/catalog/src/lib/proxy/products/public-product.service#PublicProductService.get
+        resolution: candidate
+        ext: { angular: { via: convention, convention: "@abp/ng.core#RestService.request" } }
+        at: apps/angular/projects/catalog/src/lib/proxy/products/public-product.service.ts:13
+      - kind: http.call
+        method: GET
+        canonicalRoute: /api/catalog/public-product
+        baseAddress:
+          source: convention
+          key: environment.apis.Catalog.url
+          values:
+            - { application: apps/angular, configuration: default, file: apps/angular/src/environments/environment.ts, value: "https://localhost:44354" }
+            - { application: apps/angular, configuration: production, file: apps/angular/src/environments/environment.prod.ts }
+        caller: ts:apps/angular/projects/catalog:apps/angular/projects/catalog/src/lib/proxy/products/public-product.service#PublicProductService.getList
+        resolution: candidate
+        ext: { angular: { via: convention, convention: "@abp/ng.core#RestService.request" } }
+        at: apps/angular/projects/catalog/src/lib/proxy/products/public-product.service.ts:20
+      - kind: http.call
+        method: POST
+        canonicalRoute: /api/catalog/product
+        baseAddress:
+          source: convention
+          key: environment.apis.Catalog.url
+          values:
+            - { application: apps/angular, configuration: default, file: apps/angular/src/environments/environment.ts, value: "https://localhost:44354" }
+            - { application: apps/angular, configuration: production, file: apps/angular/src/environments/environment.prod.ts }
+        caller: ts:apps/angular/projects/catalog:apps/angular/projects/catalog/src/lib/proxy/products/product.service#ProductService.create
+        resolution: candidate
+        ext: { angular: { via: convention, convention: "@abp/ng.core#RestService.request" } }
+        at: apps/angular/projects/catalog/src/lib/proxy/products/product.service.ts:13
+      - kind: http.call
+        method: DELETE
+        canonicalRoute: /api/catalog/product/{}
+        baseAddress:
+          source: convention
+          key: environment.apis.Catalog.url
+          values:
+            - { application: apps/angular, configuration: default, file: apps/angular/src/environments/environment.ts, value: "https://localhost:44354" }
+            - { application: apps/angular, configuration: production, file: apps/angular/src/environments/environment.prod.ts }
+        caller: ts:apps/angular/projects/catalog:apps/angular/projects/catalog/src/lib/proxy/products/product.service#ProductService.delete
+        resolution: candidate
+        ext: { angular: { via: convention, convention: "@abp/ng.core#RestService.request" } }
+        at: apps/angular/projects/catalog/src/lib/proxy/products/product.service.ts:21
+      - kind: http.call
+        method: GET
+        canonicalRoute: /api/catalog/product/{}
+        baseAddress:
+          source: convention
+          key: environment.apis.Catalog.url
+          values:
+            - { application: apps/angular, configuration: default, file: apps/angular/src/environments/environment.ts, value: "https://localhost:44354" }
+            - { application: apps/angular, configuration: production, file: apps/angular/src/environments/environment.prod.ts }
+        caller: ts:apps/angular/projects/catalog:apps/angular/projects/catalog/src/lib/proxy/products/product.service#ProductService.get
+        resolution: candidate
+        ext: { angular: { via: convention, convention: "@abp/ng.core#RestService.request" } }
+        at: apps/angular/projects/catalog/src/lib/proxy/products/product.service.ts:28
+      - kind: http.call
+        method: GET
+        canonicalRoute: /api/catalog/product
+        baseAddress:
+          source: convention
+          key: environment.apis.Catalog.url
+          values:
+            - { application: apps/angular, configuration: default, file: apps/angular/src/environments/environment.ts, value: "https://localhost:44354" }
+            - { application: apps/angular, configuration: production, file: apps/angular/src/environments/environment.prod.ts }
+        caller: ts:apps/angular/projects/catalog:apps/angular/projects/catalog/src/lib/proxy/products/product.service#ProductService.getList
+        resolution: candidate
+        ext: { angular: { via: convention, convention: "@abp/ng.core#RestService.request" } }
+        at: apps/angular/projects/catalog/src/lib/proxy/products/product.service.ts:35
+      - kind: http.call
+        method: GET
+        canonicalRoute: /api/catalog/product/paged
+        baseAddress:
+          source: convention
+          key: environment.apis.Catalog.url
+          values:
+            - { application: apps/angular, configuration: default, file: apps/angular/src/environments/environment.ts, value: "https://localhost:44354" }
+            - { application: apps/angular, configuration: production, file: apps/angular/src/environments/environment.prod.ts }
+        caller: ts:apps/angular/projects/catalog:apps/angular/projects/catalog/src/lib/proxy/products/product.service#ProductService.getListPaged
+        resolution: candidate
+        ext: { angular: { via: convention, convention: "@abp/ng.core#RestService.request" } }
+        at: apps/angular/projects/catalog/src/lib/proxy/products/product.service.ts:42
+      - kind: http.call
+        method: PUT
+        canonicalRoute: /api/catalog/product/{}
+        baseAddress:
+          source: convention
+          key: environment.apis.Catalog.url
+          values:
+            - { application: apps/angular, configuration: default, file: apps/angular/src/environments/environment.ts, value: "https://localhost:44354" }
+            - { application: apps/angular, configuration: production, file: apps/angular/src/environments/environment.prod.ts }
+        caller: ts:apps/angular/projects/catalog:apps/angular/projects/catalog/src/lib/proxy/products/product.service#ProductService.update
+        resolution: candidate
+        ext: { angular: { via: convention, convention: "@abp/ng.core#RestService.request" } }
+        at: apps/angular/projects/catalog/src/lib/proxy/products/product.service.ts:50
+      - kind: http.call
+        method: POST
+        canonicalRoute: /api/ordering/order
+        baseAddress:
+          source: convention
+          key: environment.apis.Ordering.url
+          values:
+            - { application: apps/angular, configuration: default, file: apps/angular/src/environments/environment.ts, value: "https://localhost:44356" }
+            - { application: apps/angular, configuration: production, file: apps/angular/src/environments/environment.prod.ts }
+        caller: ts:apps/angular/projects/ordering:apps/angular/projects/ordering/src/lib/proxy/orders/order.service#OrderService.create
+        resolution: candidate
+        ext: { angular: { via: convention, convention: "@abp/ng.core#RestService.request" } }
+        at: apps/angular/projects/ordering/src/lib/proxy/orders/order.service.ts:13
+      - kind: http.call
+        method: GET
+        canonicalRoute: /api/ordering/order/{}
+        baseAddress:
+          source: convention
+          key: environment.apis.Ordering.url
+          values:
+            - { application: apps/angular, configuration: default, file: apps/angular/src/environments/environment.ts, value: "https://localhost:44356" }
+            - { application: apps/angular, configuration: production, file: apps/angular/src/environments/environment.prod.ts }
+        caller: ts:apps/angular/projects/ordering:apps/angular/projects/ordering/src/lib/proxy/orders/order.service#OrderService.get
+        resolution: candidate
+        ext: { angular: { via: convention, convention: "@abp/ng.core#RestService.request" } }
+        at: apps/angular/projects/ordering/src/lib/proxy/orders/order.service.ts:21
+      - kind: http.call
+        method: GET
+        canonicalRoute: /api/ordering/order/by-order-no
+        baseAddress:
+          source: convention
+          key: environment.apis.Ordering.url
+          values:
+            - { application: apps/angular, configuration: default, file: apps/angular/src/environments/environment.ts, value: "https://localhost:44356" }
+            - { application: apps/angular, configuration: production, file: apps/angular/src/environments/environment.prod.ts }
+        caller: ts:apps/angular/projects/ordering:apps/angular/projects/ordering/src/lib/proxy/orders/order.service#OrderService.getByOrderNo
+        resolution: candidate
+        ext: { angular: { via: convention, convention: "@abp/ng.core#RestService.request" } }
+        at: apps/angular/projects/ordering/src/lib/proxy/orders/order.service.ts:28
+      - kind: http.call
+        method: GET
+        canonicalRoute: /api/ordering/order/dashboard
+        baseAddress:
+          source: convention
+          key: environment.apis.Ordering.url
+          values:
+            - { application: apps/angular, configuration: default, file: apps/angular/src/environments/environment.ts, value: "https://localhost:44356" }
+            - { application: apps/angular, configuration: production, file: apps/angular/src/environments/environment.prod.ts }
+        caller: ts:apps/angular/projects/ordering:apps/angular/projects/ordering/src/lib/proxy/orders/order.service#OrderService.getDashboard
+        resolution: candidate
+        ext: { angular: { via: convention, convention: "@abp/ng.core#RestService.request" } }
+        at: apps/angular/projects/ordering/src/lib/proxy/orders/order.service.ts:36
+      - kind: http.call
+        method: GET
+        canonicalRoute: /api/ordering/order/paged
+        baseAddress:
+          source: convention
+          key: environment.apis.Ordering.url
+          values:
+            - { application: apps/angular, configuration: default, file: apps/angular/src/environments/environment.ts, value: "https://localhost:44356" }
+            - { application: apps/angular, configuration: production, file: apps/angular/src/environments/environment.prod.ts }
+        caller: ts:apps/angular/projects/ordering:apps/angular/projects/ordering/src/lib/proxy/orders/order.service#OrderService.getListPaged
+        resolution: candidate
+        ext: { angular: { via: convention, convention: "@abp/ng.core#RestService.request" } }
+        at: apps/angular/projects/ordering/src/lib/proxy/orders/order.service.ts:44
+      - kind: http.call
+        method: GET
+        canonicalRoute: /api/ordering/order/my-orders
+        baseAddress:
+          source: convention
+          key: environment.apis.Ordering.url
+          values:
+            - { application: apps/angular, configuration: default, file: apps/angular/src/environments/environment.ts, value: "https://localhost:44356" }
+            - { application: apps/angular, configuration: production, file: apps/angular/src/environments/environment.prod.ts }
+        caller: ts:apps/angular/projects/ordering:apps/angular/projects/ordering/src/lib/proxy/orders/order.service#OrderService.getMyOrders
+        resolution: candidate
+        ext: { angular: { via: convention, convention: "@abp/ng.core#RestService.request" } }
+        at: apps/angular/projects/ordering/src/lib/proxy/orders/order.service.ts:52
+      - kind: http.call
+        method: GET
+        canonicalRoute: /api/ordering/order/orders
+        baseAddress:
+          source: convention
+          key: environment.apis.Ordering.url
+          values:
+            - { application: apps/angular, configuration: default, file: apps/angular/src/environments/environment.ts, value: "https://localhost:44356" }
+            - { application: apps/angular, configuration: production, file: apps/angular/src/environments/environment.prod.ts }
+        caller: ts:apps/angular/projects/ordering:apps/angular/projects/ordering/src/lib/proxy/orders/order.service#OrderService.getOrders
+        resolution: candidate
+        ext: { angular: { via: convention, convention: "@abp/ng.core#RestService.request" } }
+        at: apps/angular/projects/ordering/src/lib/proxy/orders/order.service.ts:60
+      - kind: http.call
+        method: POST
+        canonicalRoute: /api/ordering/order/{}/set-as-cancelled
+        baseAddress:
+          source: convention
+          key: environment.apis.Ordering.url
+          values:
+            - { application: apps/angular, configuration: default, file: apps/angular/src/environments/environment.ts, value: "https://localhost:44356" }
+            - { application: apps/angular, configuration: production, file: apps/angular/src/environments/environment.prod.ts }
+        caller: ts:apps/angular/projects/ordering:apps/angular/projects/ordering/src/lib/proxy/orders/order.service#OrderService.setAsCancelled
+        resolution: candidate
+        ext: { angular: { via: convention, convention: "@abp/ng.core#RestService.request" } }
+        at: apps/angular/projects/ordering/src/lib/proxy/orders/order.service.ts:68
+      - kind: http.call
+        method: POST
+        canonicalRoute: /api/ordering/order/{}/set-as-shipped
+        baseAddress:
+          source: convention
+          key: environment.apis.Ordering.url
+          values:
+            - { application: apps/angular, configuration: default, file: apps/angular/src/environments/environment.ts, value: "https://localhost:44356" }
+            - { application: apps/angular, configuration: production, file: apps/angular/src/environments/environment.prod.ts }
+        caller: ts:apps/angular/projects/ordering:apps/angular/projects/ordering/src/lib/proxy/orders/order.service#OrderService.setAsShipped
+        resolution: candidate
+        ext: { angular: { via: convention, convention: "@abp/ng.core#RestService.request" } }
+        at: apps/angular/projects/ordering/src/lib/proxy/orders/order.service.ts:75
+  - kinds: [ui.route]
+    items:
+      - kind: ui.route
+        path: /
+        loadChildren: ts:apps/angular:apps/angular/src/app/home/home.module#HomeModule
+        component: null
+        at: apps/angular/src/app/app-routing.module.ts:6
+      - kind: ui.route
+        path: /account
+        component: null
+        at: apps/angular/src/app/app-routing.module.ts:11
+      - kind: ui.route
+        path: /identity
+        component: null
+        at: apps/angular/src/app/app-routing.module.ts:15
+      - kind: ui.route
+        path: /tenant-management
+        component: null
+        at: apps/angular/src/app/app-routing.module.ts:19
+      - kind: ui.route
+        path: /setting-management
+        component: null
+        at: apps/angular/src/app/app-routing.module.ts:24
+      - kind: ui.route
+        path: /catalog
+        loadChildren: ts:apps/angular/projects/catalog:apps/angular/projects/catalog/src/catalog.module#CatalogModule
+        component: null
+        at: apps/angular/src/app/app-routing.module.ts:29
+      - kind: ui.route
+        path: /ordering
+        loadChildren: ts:apps/angular/projects/ordering:apps/angular/projects/ordering/src/ordering.module#OrderingModule
+        component: null
+        at: apps/angular/src/app/app-routing.module.ts:33
+      - kind: ui.route
+        path: /
+        component: ts:apps/angular:apps/angular/src/app/home/home.component#HomeComponent
+        loadChildren: null
+        at: apps/angular/src/app/home/home-routing.module.ts:6
+      - kind: ui.route
+        path: /catalog
+        redirectTo: products
+        component: null
+        at: apps/angular/projects/catalog/src/catalog-routing.module.ts:5
+      - kind: ui.route
+        path: /catalog/products
+        loadChildren: ts:apps/angular/projects/catalog:apps/angular/projects/catalog/src/pages/product/product.module#ProductModule
+        component: null
+        at: apps/angular/projects/catalog/src/catalog-routing.module.ts:7
+      - kind: ui.route
+        path: /catalog/products
+        component: ts:apps/angular/projects/catalog:apps/angular/projects/catalog/src/pages/product/product.component#ProductComponent
+        loadChildren: null
+        at: apps/angular/projects/catalog/src/pages/product/product-routing.module.ts:9
+      - kind: ui.route
+        path: /ordering
+        loadChildren: ts:apps/angular/projects/ordering:apps/angular/projects/ordering/src/pages/dashboard/dashboard.module#DashboardModule
+        component: null
+        at: apps/angular/projects/ordering/src/ordering-routing.module.ts:6
+      - kind: ui.route
+        path: /ordering/orders
+        loadChildren: ts:apps/angular/projects/ordering:apps/angular/projects/ordering/src/pages/orders/orders.module#OrdersModule
+        component: null
+        at: apps/angular/projects/ordering/src/ordering-routing.module.ts:11
+      - kind: ui.route
+        path: /ordering
+        component: ts:apps/angular/projects/ordering:apps/angular/projects/ordering/src/pages/dashboard/dashboard.component#DashboardComponent
+        loadChildren: null
+        at: apps/angular/projects/ordering/src/pages/dashboard/dashboard-routing.module.ts:7
+      - kind: ui.route
+        path: /ordering/orders
+        component: ts:apps/angular/projects/ordering:apps/angular/projects/ordering/src/pages/orders/orders.component#OrdersComponent
+        loadChildren: null
+        at: apps/angular/projects/ordering/src/pages/orders/orders-routing.module.ts:5
