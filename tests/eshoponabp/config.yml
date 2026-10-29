@@ -1,0 +1,7 @@
+# Convention file for eShopOnAbp apps/angular (decision A10): ABP's generated proxies call RestService.request.
+http:
+  clients:
+    - package: "@abp/ng.core"
+      method: RestService.request
+      request: { argument: 0, method: method, url: url }
+      base: { argument: 1, property: apiName, environmentKey: "environment.apis.{}.url", default: default }
