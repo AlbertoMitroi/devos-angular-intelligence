@@ -1,0 +1,9 @@
+<app-header [title]="title()" (refresh)="select(0)"></app-header>
+@if (items().length > 0) {
+  @for (item of items(); track item.id) {
+    <app-item [name]="item.name" (click)="select(item.id)" />
+  }
+} @else {
+  <p>No items</p>
+}
+<app-missing></app-missing>

@@ -1,0 +1,17 @@
+{
+  "name": "a09-dispatch",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "@angular/common": "22.2.3",
+    "@angular/compiler": "22.2.3",
+    "@angular/core": "22.2.3",
+    "@angular/platform-browser": "22.2.3",
+    "@angular/router": "22.2.3",
+    "rxjs": "7.8.2",
+    "tslib": "2.8.1"
+  },
+  "devDependencies": {
+    "typescript": "6.0.3"
+  }
+}

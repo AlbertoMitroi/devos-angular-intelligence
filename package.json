@@ -1,0 +1,26 @@
+{
+  "name": "angular-intelligence",
+  "version": "0.1.0",
+  "description": "Context engine for Angular repositories: deterministic, verifiable generations in the intelligence contract.",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.22.0 <25"
+  },
+  "bin": {
+    "angular-intelligence": "src/cli.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "node --test --test-reporter=spec 'tests/unit/*.test.ts'"
+  },
+  "dependencies": {
+    "@angular/compiler": "22.2.3",
+    "typescript": "6.0.3",
+    "yaml": "2.9.1"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.2"
+  }
+}

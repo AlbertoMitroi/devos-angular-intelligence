@@ -1,0 +1,8 @@
+<input [value]="name" (input)="name = $any($event.target).value" />
+<button [disabled]="!canSave()" (click)="save()">Save</button>
+@let label = 'Total';
+<p>{{ label }}: {{ total | currency }}</p>
+@switch (mode()) {
+  @case ('edit') { <button (click)="reset()">Reset</button> }
+  @default { <span>view</span> }
+}

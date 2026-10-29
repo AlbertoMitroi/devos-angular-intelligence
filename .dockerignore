@@ -1,0 +1,6 @@
+.git
+.verify
+node_modules
+**/node_modules
+intelligence-out
+action-out

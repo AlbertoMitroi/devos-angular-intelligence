@@ -1,0 +1,63 @@
+=== @angular/compiler@22.2.3
+version 22.2.3 errors 0
+Element app-header 1:1 [title] (save)=Call
+IfBlock  2:1 
+  IfBlockBranch  2:1 
+    ForLoopBlock  3:3 
+      Element app-item 3:43 [item] (click)=Call
+      ForLoopBlockEmpty  4:3 
+        Element p 4:12 
+          Text  4:15 
+  IfBlockBranch  5:3 
+    Element app-empty 5:11 
+DeferredBlock  6:1 
+  Element app-heavy 6:24 
+  DeferredBlockPlaceholder  6:39 
+    Element span 6:54 
+      Text  6:60 
+Template div 7:1 
+  Element div 7:1 
+    Element app-legacy 7:16 
+=== @angular/compiler@18.1.4
+version 18.1.4 errors 0
+Element$1 app-header 1:1 [title] (save)=Call
+IfBlock  2:1 
+  IfBlockBranch  2:1 
+    ForLoopBlock  3:3 
+      Element$1 app-item 3:43 [item] (click)=Call
+      ForLoopBlockEmpty  4:3 
+        Element$1 p 4:12 
+          Text$3  4:15 
+  IfBlockBranch  5:3 
+    Element$1 app-empty 5:11 
+DeferredBlock  6:1 
+  Element$1 app-heavy 6:24 
+  DeferredBlockPlaceholder  6:39 
+    Element$1 span 6:54 
+      Text$3  6:60 
+Template div 7:1 
+  Element$1 div 7:1 
+    Element$1 app-legacy 7:16 
+=== @angular/compiler@17.3.12
+version 17.3.12 errors 0
+Element$1 app-header 1:1 [title] (save)=Call
+IfBlock  2:1 
+  IfBlockBranch  2:1 
+    ForLoopBlock  3:3 
+      Element$1 app-item 3:43 [item] (click)=Call
+      ForLoopBlockEmpty  4:3 
+        Element$1 p 4:12 
+          Text$3  4:15 
+  IfBlockBranch  5:3 
+    Element$1 app-empty 5:11 
+DeferredBlock  6:1 
+  Element$1 app-heavy 6:24 
+  DeferredBlockPlaceholder  6:39 
+    Element$1 span 6:54 
+      Text$3  6:60 
+Template div 7:1 
+  Element$1 div 7:1 
+    Element$1 app-legacy 7:16 
+=== @angular/compiler@16.2.12
+version 16.2.12 errors 2
+

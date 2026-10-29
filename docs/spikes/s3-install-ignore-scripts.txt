@@ -1,0 +1,9 @@
+install failed (plain)
+install seconds: 105
+npm error A complete log of this run can be found in: /cache/npm/_logs/2026-10-29T16_42_11_672Z-debug-0.log
+typescript 5.4.5
+@angular/core 18.1.5
+@angular/compiler 18.1.5
+@abp/ng.core 9.3.7
+hasInstallScript: 6 node_modules/esbuild node_modules/fsevents node_modules/lmdb node_modules/msgpackr-extract node_modules/ng-packagr/node_modules/esbuild node_modules/nice-napi
+{"ts":"5.4.5","rootFiles":2,"configErrors":0,"ownFiles":64,"allFiles":999,"syntactic":0,"semantic":0,"byCode":{},"identifiers":1087,"unresolvedIdentifiers":0,"ms":461}

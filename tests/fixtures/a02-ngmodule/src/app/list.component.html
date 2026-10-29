@@ -1,0 +1,6 @@
+<ul>
+  <li *ngFor="let item of items; let i = index" appHighlight>
+    {{ item }}
+    <app-badge *ngIf="isLast(i)" label="last"></app-badge>
+  </li>
+</ul>

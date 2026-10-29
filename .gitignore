@@ -1,0 +1,5 @@
+.verify/
+node_modules/
+intelligence-out/
+action-out/
+.ci-action/
