@@ -1,6 +1,6 @@
 {
   "name": "angular-intelligence",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Context engine for Angular repositories: deterministic, verifiable generations in the intelligence contract.",
   "license": "MIT",
   "private": true,

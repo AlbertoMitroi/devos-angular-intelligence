@@ -5,7 +5,7 @@ import { recordId, compareOrdinal } from './util/canonical.ts';
 import { redactLine } from './secrets.ts';
 
 export const ENGINE_NAME = 'angular-intelligence';
-export const ENGINE_VERSION = '0.1.0';
+export const ENGINE_VERSION = '0.2.0';
 export const EXTRACTOR = `${ENGINE_NAME}@${ENGINE_VERSION}`;
 
 export interface Span {

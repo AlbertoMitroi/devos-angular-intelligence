@@ -9,7 +9,7 @@ docker run --rm \
   -v "$PWD/intelligence-out:/out" \
   -v "$PWD/.angular-intelligence:/cache" \
   --tmpfs /work:rw,exec,size=4g \
-  ghcr.io/albertomitroi/angular-intelligence:0.1.0 \
+  ghcr.io/albertomitroi/angular-intelligence:0.2.0 \
   analyze --src /src --out /out
 ```
 
@@ -26,7 +26,7 @@ context-artifacts:
   script:
     - mkdir -p intelligence-out
     - docker run --rm -v "$CI_PROJECT_DIR:/src:ro" -v "$CI_PROJECT_DIR/intelligence-out:/out"
-        ghcr.io/albertomitroi/angular-intelligence:0.1.0 analyze --src /src --out /out || [ $? -eq 10 ]
+        ghcr.io/albertomitroi/angular-intelligence:0.2.0 analyze --src /src --out /out || [ $? -eq 10 ]
   artifacts:
     paths: [intelligence-out/]
 ```

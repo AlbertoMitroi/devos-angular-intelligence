@@ -57,7 +57,7 @@ The engine version is not an annotation: it is in `manifest.json`. A consumer pu
 mkdir -p intelligence-out
 docker run --rm --user "$(id -u):$(id -g)" \
   -v "$PWD:/src:ro" -v "$PWD/intelligence-out:/out" -v angular-intelligence-cache:/cache \
-  ghcr.io/albertomitroi/angular-intelligence:0.1.0 analyze --src /src --out /out
+  ghcr.io/albertomitroi/angular-intelligence:0.2.0 analyze --src /src --out /out
 ```
 
 | Mount | Mode | Content |
@@ -92,7 +92,7 @@ docker run --rm --user "$(id -u):$(id -g)" \
 ## Query
 
 ```bash
-docker run --rm -v "$PWD/intelligence-out:/g:ro" ghcr.io/albertomitroi/angular-intelligence:0.1.0 query /g http --route /api
+docker run --rm -v "$PWD/intelligence-out:/g:ro" ghcr.io/albertomitroi/angular-intelligence:0.2.0 query /g http --route /api
 ```
 
 Subcommands: `symbol <name>`, `refs <id>`, `callers <id>`, `callees <id>`, `impl <id>`, `di <token>`, `routes`, `http [--route <prefix>]`, `search <text>` (FTS5), `dump` (canonical dump of the index). `--json` for machine output. Exit code 3: the name is ambiguous; 4: no results.
