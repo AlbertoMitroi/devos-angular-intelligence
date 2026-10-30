@@ -118,3 +118,9 @@ Format per entry: context, options, choice, reason, how to revisit. Status `acce
 
 - **Choice:** canonical JSON, ids from content hashes, ordinal sorting everywhere, spans in UTF-16 code units with the BOM not counted and CRLF kept as committed (fixture 15). Byte comparison between runs and between amd64 and arm64 excludes only `run.json`, `index.sqlite` (compared through its canonical dump), event streams, logs and `version.json`. The CLI exits only after stdout and stderr are flushed: `process.exit()` right after a large write truncated piped output at 64 KiB (found when the `query dump` of fixture 6 differed between runs).
 - **Status:** accepted.
+
+## A17: Release tags and the published generation
+
+- **Context:** callers pin the Action by `@v1`; the first release is `0.1.0`, whose semver major is 0. Generations pushed by callers must be readable by consumers that do not know which engine produced them.
+- **Choice:** `release.yml` on tag `v<version>` (version equal in `package.json` and `action.yml`) publishes `<version>` and `<version>-action` and moves `v1`, the major of the Action interface, also for 0.x releases; a breaking change to the Action inputs or outputs starts `v2`. The OCI example pushes `ghcr.io/<owner>/context-<repository>:<commit sha>` plus a moving `:main`, artifact type `application/vnd.devos.intelligence.generation.v1`, one layer `application/vnd.devos.intelligence.generation.v1.tar+gzip` (byte-stable tar of the generation directory), with the repository and commit as `org.opencontainers.image.source` and `org.opencontainers.image.revision` annotations. The same layout is used by dotnet-intelligence.
+- **Status:** accepted.
