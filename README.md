@@ -24,3 +24,7 @@ scripts/verify.sh
 - Dependencies and licenses: [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md)
 - Spikes: [docs/spikes/](docs/spikes/)
 - Reports: [docs/reports/](docs/reports/)
+
+## License
+
+MIT, see [LICENSE](LICENSE).
