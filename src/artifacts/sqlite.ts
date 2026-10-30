@@ -1,9 +1,12 @@
-// index.sqlite (PLAN Step 4): tables mirror the contract records, indexes in both directions, FTS5 over names,
-// signatures and snippets. Derived data; the NDJSON graph stays the source of truth. A canonical dump (sorted rows)
+// index.sqlite (PLAN Step 4, contract v1.2 index schema 1): the base tables of the vendored index.sql exactly as
+// written, FTS5 over names, signatures and snippets. Derived data; the NDJSON graph stays the source of truth. A canonical dump (sorted rows)
 // is what must be identical across runs and architectures.
 import { DatabaseSync } from 'node:sqlite';
 import type { RecordSet, Rec } from './integrity.ts';
-import { canonical } from '../util/canonical.ts';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { canonical, compareOrdinal } from '../util/canonical.ts';
+import { SCHEMA_DIR } from './schema.ts';
 
 export function sqliteInfo(): { version: string; fts5: boolean } {
   const db = new DatabaseSync(':memory:');
@@ -18,35 +21,46 @@ export function sqliteInfo(): { version: string; fts5: boolean } {
   return { version, fts5 };
 }
 
-const SCHEMA = `
-create table meta(key text primary key, value text not null);
-create table entities(id text primary key, kind text, name text, container text, signature text, project text, origin text, json text);
-create table declarations(id text primary key, entity text, context text, path text, line integer, col integer);
-create table evidence(id text primary key, path text, line integer, col integer, end_line integer, end_col integer, method text, context text, text text);
-create table relations(id text primary key, kind text, from_id text, to_id text, usage text, resolution text, context text, path text, line integer, declared_target text);
-create table observations(id text primary key, kind text, project text, path text, line integer, json text);
-create table links(id text primary key, kind text, via text, from_obs text, to_obs text, resolution text, reason text);
-create table diagnostics(id text primary key, severity text, code text, scope text, state text, message text);
-create table projects(id text primary key, record_type text, path text, json text);
-create index relations_from on relations(from_id, kind);
-create index relations_to on relations(to_id, kind);
-create index declarations_entity on declarations(entity);
-create index declarations_location on declarations(path, line);
-create index entities_name on entities(name);
-create index observations_kind on observations(kind);
-create index links_from on links(from_obs);
-create index links_to on links(to_obs);
-create virtual table search using fts5(ref unindexed, kind unindexed, text);
-`;
+/** The "base" section of the vendored contract index schema (schema/index/v1/index.sql, index schema 1), as written. */
+function baseSchema(): string {
+  const sql = readFileSync(join(SCHEMA_DIR, '..', 'index', 'v1', 'index.sql'), 'utf8');
+  const out: string[] = [];
+  let section = '';
+  for (const line of sql.split('\n')) {
+    const header = /^--\s*(base|evidence|system)\s*$/.exec(line.trim());
+    if (header) section = header[1];
+    else if (section === 'base' && line.trim() && !line.trim().startsWith('--')) out.push(line);
+  }
+  return out.join('\n');
+}
+
+type Span = { startLine: number; startColumn: number };
+
+/** Index schema 1: the first evidence by (path ordinal, startLine, startColumn). */
+function firstByLocation(evidence: Map<string, Rec>, ids: string[]): Rec | undefined {
+  let best: Rec | undefined;
+  for (const id of ids) {
+    const e = evidence.get(id);
+    if (!e) continue;
+    if (!best) {
+      best = e;
+      continue;
+    }
+    const a = e.span as Span;
+    const b = best.span as Span;
+    const c = compareOrdinal(e.path as string, best.path as string) || a.startLine - b.startLine || a.startColumn - b.startColumn;
+    if (c < 0) best = e;
+  }
+  return best;
+}
 
 export function writeIndex(path: string, set: RecordSet, meta: Record<string, string>): void {
   const db = new DatabaseSync(path);
   db.exec('pragma journal_mode = off; pragma synchronous = off;');
-  db.exec(SCHEMA);
+  db.exec(baseSchema());
   db.exec('begin');
   const evidence = new Map<string, Rec>(set.evidence.map((e) => [e.id, e]));
   const snippets = new Map<string, Rec>(set.snippets.map((s) => [s.id, s]));
-  const firstEvidence = (ids: unknown) => evidence.get((ids as string[])[0]);
   const insertMeta = db.prepare('insert into meta values (?, ?)');
   for (const [k, v] of Object.entries(meta).sort()) insertMeta.run(k, v);
   const ent = db.prepare('insert into entities values (?, ?, ?, ?, ?, ?, ?, ?)');
@@ -69,13 +83,14 @@ export function writeIndex(path: string, set: RecordSet, meta: Record<string, st
   for (const s of set.snippets) search.run(s.id, 'snippet', s.text as string);
   const rel = db.prepare('insert into relations values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
   for (const r of set.relations) {
-    const e = firstEvidence(r.evidence);
+    const e = firstByLocation(evidence, r.evidence as string[]);
     const span = e?.span as { startLine: number } | undefined;
     rel.run(r.id, r.kind as string, r.from as string, r.to as string, (r.usage as string) ?? null, r.resolution as string, r.context as string, (e?.path as string) ?? null, span?.startLine ?? null, (r.declaredTarget as string) ?? null);
   }
   const obs = db.prepare('insert into observations values (?, ?, ?, ?, ?, ?)');
   for (const o of set.observations) {
-    const e = firstEvidence(o.evidence);
+    // The site (v1.2), else the first evidence by location.
+    const e = (typeof o.site === 'string' ? evidence.get(o.site) : undefined) ?? firstByLocation(evidence, o.evidence as string[]);
     const span = e?.span as { startLine: number } | undefined;
     obs.run(o.id, o.kind as string, o.project as string, (e?.path as string) ?? null, span?.startLine ?? null, canonical(o));
   }

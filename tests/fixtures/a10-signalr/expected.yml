@@ -27,16 +27,19 @@ observations:
       method: OrderShipped
       client: ts:.:src/app/orders-hub.service#OrdersHubService
       resolution: exact
-      at: src/app/orders-hub.service.ts:11,src/app/orders-hub.service.ts:16
+      at: src/app/orders-hub.service.ts:16
+      evidenceAt: src/app/orders-hub.service.ts:11,src/app/orders-hub.service.ts:16
     - kind: realtime.invoke
       route: /hubs/orders
       method: Subscribe
       mode: invoke
       resolution: exact
-      at: src/app/orders-hub.service.ts:11,src/app/orders-hub.service.ts:21
+      at: src/app/orders-hub.service.ts:21
+      evidenceAt: src/app/orders-hub.service.ts:11,src/app/orders-hub.service.ts:21
     - kind: realtime.invoke
       route: /hubs/orders
       method: Ping
       mode: send
       resolution: exact
-      at: src/app/orders-hub.service.ts:11,src/app/orders-hub.service.ts:25
+      at: src/app/orders-hub.service.ts:25
+      evidenceAt: src/app/orders-hub.service.ts:11,src/app/orders-hub.service.ts:25

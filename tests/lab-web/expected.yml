@@ -1,0 +1,345 @@
+# lab-web (AlbertoMitroi/devos-lab-web): its ground-truth.yml, written from source at 6353ca4 and committed at e21eef1,
+# as comparator input. Sources are unchanged up to 66264d5. Items: web-base-url, web-routes, web-http-calls,
+# web-component-calls, web-realtime-subscribe (the hub URL); cross-repository targets are federation, not this engine.
+exitCode: 0
+status: complete
+loadModes:
+  ".": semantic
+diagnostics: []
+relations:
+  - kinds: [calls_declared_target]
+    to: "ts:.:src/app/features/applications/applications.service#ApplicationsService."
+    items:
+      - calls_declared_target ts:.:src/app/features/applications/application-list#ApplicationList.load -> ts:.:src/app/features/applications/applications.service#ApplicationsService.search @src/app/features/applications/application-list.ts:53
+      - calls_declared_target ts:.:src/app/features/applications/application-detail#ApplicationDetail.ngOnInit -> ts:.:src/app/features/applications/applications.service#ApplicationsService.get @src/app/features/applications/application-detail.ts:33
+      - calls_declared_target ts:.:src/app/features/applications/application-detail#ApplicationDetail.review -> ts:.:src/app/features/applications/applications.service#ApplicationsService.review @src/app/features/applications/application-detail.ts:41
+      - calls_declared_target ts:.:src/app/features/applications/application-detail#ApplicationDetail.withdraw -> ts:.:src/app/features/applications/applications.service#ApplicationsService.withdraw @src/app/features/applications/application-detail.ts:45
+  - kinds: [calls_declared_target]
+    to: "ts:.:src/app/features/assessments/assessments.service#AssessmentsService."
+    items:
+      - calls_declared_target ts:.:src/app/features/assessments/assessment-list#AssessmentList.load -> ts:.:src/app/features/assessments/assessments.service#AssessmentsService.list @src/app/features/assessments/assessment-list.ts:34
+      - calls_declared_target ts:.:src/app/features/assessments/assessment-list#AssessmentList.assess -> ts:.:src/app/features/assessments/assessments.service#AssessmentsService.assess @src/app/features/assessments/assessment-list.ts:38
+  - kinds: [calls_declared_target]
+    to: "ts:.:src/app/features/quotes/quotes.service#QuotesService."
+    items:
+      - calls_declared_target ts:.:src/app/features/quotes/quote-list#QuoteList.constructor -> ts:.:src/app/features/quotes/quotes.service#QuotesService.list @src/app/features/quotes/quote-list.ts:25
+      - calls_declared_target ts:.:src/app/features/quotes/quote-detail#QuoteDetail.ngOnInit -> ts:.:src/app/features/quotes/quotes.service#QuotesService.get @src/app/features/quotes/quote-detail.ts:32
+      - calls_declared_target ts:.:src/app/features/quotes/quote-detail#QuoteDetail.recalculate -> ts:.:src/app/features/quotes/quotes.service#QuotesService.recalculate @src/app/features/quotes/quote-detail.ts:36
+      - calls_declared_target ts:.:src/app/features/quotes/quote-detail#QuoteDetail.answer -> ts:.:src/app/features/quotes/quotes.service#QuotesService.accept @src/app/features/quotes/quote-detail.ts:40
+  - kinds: [calls_declared_target]
+    to: "ts:.:src/app/features/leases/leases.service#LeasesService."
+    items:
+      - calls_declared_target ts:.:src/app/features/leases/lease-list#LeaseList.load -> ts:.:src/app/features/leases/leases.service#LeasesService.search @src/app/features/leases/lease-list.ts:34
+      - calls_declared_target ts:.:src/app/features/leases/lease-detail#LeaseDetail.ngOnInit -> ts:.:src/app/features/leases/leases.service#LeasesService.get @src/app/features/leases/lease-detail.ts:33
+      - calls_declared_target ts:.:src/app/features/leases/lease-detail#LeaseDetail.ngOnInit -> ts:.:src/app/features/leases/leases.service#LeasesService.document @src/app/features/leases/lease-detail.ts:36
+      - calls_declared_target ts:.:src/app/features/leases/lease-detail#LeaseDetail.sign -> ts:.:src/app/features/leases/leases.service#LeasesService.sign @src/app/features/leases/lease-detail.ts:42
+  - kinds: [calls_declared_target]
+    to: "ts:.:src/app/features/admin/portfolio.service#PortfolioService."
+    items:
+      - calls_declared_target ts:.:src/app/features/admin/portfolio#Portfolio.constructor -> ts:.:src/app/features/admin/portfolio.service#PortfolioService.summary @src/app/features/admin/portfolio.ts:24
+observations:
+  - kinds: [http.call, http.interceptor]
+    items:
+      - kind: http.call
+        method: GET
+        canonicalRoute: /v1/applications
+        baseAddress:
+          source: environment
+          key: environment.apiUrl
+          file: src/environments/environment.ts
+          values:
+            - { application: ".", configuration: default, file: src/environments/environment.ts, value: "https://app-lab-leasing-dev.azurewebsites.net" }
+            - { application: ".", configuration: development, file: src/environments/environment.development.ts, value: "http://localhost:5080" }
+          nameSource: configuration
+        caller: ts:.:src/app/features/applications/applications.service#ApplicationsService.search
+        resolution: exact
+        reason: null
+        at: src/app/features/applications/applications.service.ts:20
+      - kind: http.call
+        method: GET
+        canonicalRoute: /v1/applications/{}
+        baseAddress:
+          source: environment
+          key: environment.apiUrl
+          file: src/environments/environment.ts
+          values:
+            - { application: ".", configuration: default, file: src/environments/environment.ts, value: "https://app-lab-leasing-dev.azurewebsites.net" }
+            - { application: ".", configuration: development, file: src/environments/environment.development.ts, value: "http://localhost:5080" }
+          nameSource: configuration
+        caller: ts:.:src/app/features/applications/applications.service#ApplicationsService.get
+        resolution: exact
+        reason: null
+        at: src/app/features/applications/applications.service.ts:24
+      - kind: http.call
+        method: POST
+        canonicalRoute: /v1/applications/{}/review
+        baseAddress:
+          source: environment
+          key: environment.apiUrl
+          file: src/environments/environment.ts
+          values:
+            - { application: ".", configuration: default, file: src/environments/environment.ts, value: "https://app-lab-leasing-dev.azurewebsites.net" }
+            - { application: ".", configuration: development, file: src/environments/environment.development.ts, value: "http://localhost:5080" }
+          nameSource: configuration
+        caller: ts:.:src/app/features/applications/applications.service#ApplicationsService.review
+        resolution: exact
+        reason: null
+        at: src/app/features/applications/applications.service.ts:28
+      - kind: http.call
+        method: POST
+        canonicalRoute: /v1/applications/{}/actions/withdraw
+        baseAddress:
+          source: environment
+          key: environment.apiUrl
+          file: src/environments/environment.ts
+          values:
+            - { application: ".", configuration: default, file: src/environments/environment.ts, value: "https://app-lab-leasing-dev.azurewebsites.net" }
+            - { application: ".", configuration: development, file: src/environments/environment.development.ts, value: "http://localhost:5080" }
+          nameSource: configuration
+        caller: ts:.:src/app/features/applications/applications.service#ApplicationsService.withdraw
+        resolution: exact
+        reason: null
+        at: src/app/features/applications/applications.service.ts:32
+      - kind: http.call
+        method: GET
+        canonicalRoute: /v1/assessments
+        baseAddress:
+          source: environment
+          key: environment.apiUrl
+          file: src/environments/environment.ts
+          values:
+            - { application: ".", configuration: default, file: src/environments/environment.ts, value: "https://app-lab-leasing-dev.azurewebsites.net" }
+            - { application: ".", configuration: development, file: src/environments/environment.development.ts, value: "http://localhost:5080" }
+          nameSource: configuration
+        caller: ts:.:src/app/features/assessments/assessments.service#AssessmentsService.list
+        resolution: exact
+        reason: null
+        at: src/app/features/assessments/assessments.service.ts:13
+      - kind: http.call
+        method: POST
+        canonicalRoute: /v1/assessments/{}/assess
+        baseAddress:
+          source: environment
+          key: environment.apiUrl
+          file: src/environments/environment.ts
+          values:
+            - { application: ".", configuration: default, file: src/environments/environment.ts, value: "https://app-lab-leasing-dev.azurewebsites.net" }
+            - { application: ".", configuration: development, file: src/environments/environment.development.ts, value: "http://localhost:5080" }
+          nameSource: configuration
+        caller: ts:.:src/app/features/assessments/assessments.service#AssessmentsService.assess
+        resolution: exact
+        reason: null
+        at: src/app/features/assessments/assessments.service.ts:17
+      - kind: http.call
+        method: GET
+        canonicalRoute: /v1/quotes
+        baseAddress:
+          source: environment
+          key: environment.apiUrl
+          file: src/environments/environment.ts
+          values:
+            - { application: ".", configuration: default, file: src/environments/environment.ts, value: "https://app-lab-leasing-dev.azurewebsites.net" }
+            - { application: ".", configuration: development, file: src/environments/environment.development.ts, value: "http://localhost:5080" }
+          nameSource: configuration
+        caller: ts:.:src/app/features/quotes/quotes.service#QuotesService.list
+        resolution: exact
+        reason: null
+        at: src/app/features/quotes/quotes.service.ts:13
+      - kind: http.call
+        method: GET
+        canonicalRoute: /v1/quotes/{}
+        baseAddress:
+          source: environment
+          key: environment.apiUrl
+          file: src/environments/environment.ts
+          values:
+            - { application: ".", configuration: default, file: src/environments/environment.ts, value: "https://app-lab-leasing-dev.azurewebsites.net" }
+            - { application: ".", configuration: development, file: src/environments/environment.development.ts, value: "http://localhost:5080" }
+          nameSource: configuration
+        caller: ts:.:src/app/features/quotes/quotes.service#QuotesService.get
+        resolution: exact
+        reason: null
+        at: src/app/features/quotes/quotes.service.ts:17
+      - kind: http.call
+        method: POST
+        canonicalRoute: /v1/quotes/{}/accept
+        baseAddress:
+          source: environment
+          key: environment.apiUrl
+          file: src/environments/environment.ts
+          values:
+            - { application: ".", configuration: default, file: src/environments/environment.ts, value: "https://app-lab-leasing-dev.azurewebsites.net" }
+            - { application: ".", configuration: development, file: src/environments/environment.development.ts, value: "http://localhost:5080" }
+          nameSource: configuration
+        caller: ts:.:src/app/features/quotes/quotes.service#QuotesService.accept
+        resolution: exact
+        reason: null
+        at: src/app/features/quotes/quotes.service.ts:21
+      - kind: http.call
+        method: POST
+        canonicalRoute: /v1/quotes/{}/recalculate
+        baseAddress:
+          source: environment
+          key: environment.apiUrl
+          file: src/environments/environment.ts
+          values:
+            - { application: ".", configuration: default, file: src/environments/environment.ts, value: "https://app-lab-leasing-dev.azurewebsites.net" }
+            - { application: ".", configuration: development, file: src/environments/environment.development.ts, value: "http://localhost:5080" }
+          nameSource: configuration
+        caller: ts:.:src/app/features/quotes/quotes.service#QuotesService.recalculate
+        resolution: exact
+        reason: null
+        at: src/app/features/quotes/quotes.service.ts:25
+      - kind: http.call
+        method: GET
+        canonicalRoute: /v1/leases
+        baseAddress:
+          source: environment
+          key: environment.apiUrl
+          file: src/environments/environment.ts
+          values:
+            - { application: ".", configuration: default, file: src/environments/environment.ts, value: "https://app-lab-leasing-dev.azurewebsites.net" }
+            - { application: ".", configuration: development, file: src/environments/environment.development.ts, value: "http://localhost:5080" }
+          nameSource: configuration
+        caller: ts:.:src/app/features/leases/leases.service#LeasesService.search
+        resolution: exact
+        reason: null
+        at: src/app/features/leases/leases.service.ts:27
+      - kind: http.call
+        method: GET
+        canonicalRoute: /v1/leases/{}
+        baseAddress:
+          source: environment
+          key: environment.apiUrl
+          file: src/environments/environment.ts
+          values:
+            - { application: ".", configuration: default, file: src/environments/environment.ts, value: "https://app-lab-leasing-dev.azurewebsites.net" }
+            - { application: ".", configuration: development, file: src/environments/environment.development.ts, value: "http://localhost:5080" }
+          nameSource: configuration
+        caller: ts:.:src/app/features/leases/leases.service#LeasesService.get
+        resolution: exact
+        reason: null
+        at: src/app/features/leases/leases.service.ts:31
+      - kind: http.call
+        method: GET
+        canonicalRoute: /v1/leases/{}/document
+        baseAddress:
+          source: environment
+          key: environment.apiUrl
+          file: src/environments/environment.ts
+          values:
+            - { application: ".", configuration: default, file: src/environments/environment.ts, value: "https://app-lab-leasing-dev.azurewebsites.net" }
+            - { application: ".", configuration: development, file: src/environments/environment.development.ts, value: "http://localhost:5080" }
+          nameSource: configuration
+        caller: ts:.:src/app/features/leases/leases.service#LeasesService.document
+        resolution: exact
+        reason: null
+        at: src/app/features/leases/leases.service.ts:35
+      - kind: http.call
+        method: POST
+        canonicalRoute: /v1/leases/{}/sign
+        baseAddress:
+          source: environment
+          key: environment.apiUrl
+          file: src/environments/environment.ts
+          values:
+            - { application: ".", configuration: default, file: src/environments/environment.ts, value: "https://app-lab-leasing-dev.azurewebsites.net" }
+            - { application: ".", configuration: development, file: src/environments/environment.development.ts, value: "http://localhost:5080" }
+          nameSource: configuration
+        caller: ts:.:src/app/features/leases/leases.service#LeasesService.sign
+        resolution: exact
+        reason: null
+        at: src/app/features/leases/leases.service.ts:39
+      - kind: http.call
+        method: GET
+        canonicalRoute: /v1/admin/portfolio
+        baseAddress:
+          source: environment
+          key: environment.apiUrl
+          file: src/environments/environment.ts
+          values:
+            - { application: ".", configuration: default, file: src/environments/environment.ts, value: "https://app-lab-leasing-dev.azurewebsites.net" }
+            - { application: ".", configuration: development, file: src/environments/environment.development.ts, value: "http://localhost:5080" }
+          nameSource: configuration
+        caller: ts:.:src/app/features/admin/portfolio.service#PortfolioService.summary
+        resolution: exact
+        reason: null
+        at: src/app/features/admin/portfolio.service.ts:17
+  - kinds: [realtime.connection, realtime.subscribe]
+    items:
+      - kind: realtime.connection
+        route: /hubs/leasing
+        urlTemplate: /hubs/leasing
+        baseAddress:
+          source: environment
+          key: environment.apiUrl
+          values:
+            - { application: ".", configuration: default, file: src/environments/environment.ts, value: "https://app-lab-leasing-dev.azurewebsites.net" }
+            - { application: ".", configuration: development, file: src/environments/environment.development.ts, value: "http://localhost:5080" }
+        resolution: exact
+        at: src/app/core/realtime/leasing-hub.service.ts:20
+      - kind: realtime.subscribe
+        route: /hubs/leasing
+        hub: /hubs/leasing
+        method: flowUpdated
+        resolution: candidate
+        at: src/app/core/realtime/leasing-hub.service.ts:41
+        evidenceAt: src/app/core/realtime/leasing-hub.service.ts:20,src/app/core/realtime/leasing-hub.service.ts:41
+      - kind: realtime.subscribe
+        route: /hubs/leasing
+        hub: /hubs/leasing
+        method: taskAssigned
+        resolution: candidate
+        at: src/app/core/realtime/leasing-hub.service.ts:42
+        evidenceAt: src/app/core/realtime/leasing-hub.service.ts:20,src/app/core/realtime/leasing-hub.service.ts:42
+  - kinds: [ui.route]
+    items:
+      - kind: ui.route
+        path: /
+        redirectTo: applications
+        component: null
+        at: src/app/app.routes.ts:4
+      - kind: ui.route
+        path: /applications
+        loadChildren: ts:.:src/app/features/applications/applications.routes#applicationRoutes
+        at: src/app/app.routes.ts:5
+      - kind: ui.route
+        path: /assessments
+        loadComponent: ts:.:src/app/features/assessments/assessment-list#AssessmentList
+        at: src/app/app.routes.ts:6
+      - kind: ui.route
+        path: /quotes
+        loadChildren: ts:.:src/app/features/quotes/quotes.routes#quoteRoutes
+        at: src/app/app.routes.ts:7
+      - kind: ui.route
+        path: /leases
+        loadChildren: ts:.:src/app/features/leases/leases.routes#leaseRoutes
+        at: src/app/app.routes.ts:8
+      - kind: ui.route
+        path: /admin/portfolio
+        loadComponent: ts:.:src/app/features/admin/portfolio#Portfolio
+        at: src/app/app.routes.ts:9
+      - kind: ui.route
+        path: /applications
+        loadComponent: ts:.:src/app/features/applications/application-list#ApplicationList
+        at: src/app/features/applications/applications.routes.ts:4
+      - kind: ui.route
+        path: /applications/:flowId
+        loadComponent: ts:.:src/app/features/applications/application-detail#ApplicationDetail
+        at: src/app/features/applications/applications.routes.ts:5
+      - kind: ui.route
+        path: /quotes
+        loadComponent: ts:.:src/app/features/quotes/quote-list#QuoteList
+        at: src/app/features/quotes/quotes.routes.ts:4
+      - kind: ui.route
+        path: /quotes/:flowId
+        loadComponent: ts:.:src/app/features/quotes/quote-detail#QuoteDetail
+        at: src/app/features/quotes/quotes.routes.ts:5
+      - kind: ui.route
+        path: /leases
+        loadComponent: ts:.:src/app/features/leases/lease-list#LeaseList
+        at: src/app/features/leases/leases.routes.ts:4
+      - kind: ui.route
+        path: /leases/:flowId
+        loadComponent: ts:.:src/app/features/leases/lease-detail#LeaseDetail
+        at: src/app/features/leases/leases.routes.ts:5

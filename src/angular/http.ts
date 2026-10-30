@@ -283,6 +283,19 @@ function toBaseValue(v: { application: string | null; configuration: string; fil
   return out;
 }
 
+/**
+ * Environment references after the base (`${environment.apiUrl}${environment.hubPath}`) become literals when the key has
+ * the same non-secret value in every configuration of the including applications (D20: a destination from configuration).
+ */
+export function uniformEnvironment(state: AnalysisState, parts: Part[], callFile: string): Part[] {
+  return parts.map((p) => {
+    if (p.kind !== 'env') return p;
+    const { values, found } = baseFromEnvironment(state, p.file, p.key, callFile);
+    const distinct = new Set(values.map((v) => v.value));
+    return found && values.length > 0 && values.every((v) => v.value !== undefined && !v.secret) && distinct.size === 1 ? { kind: 'literal', text: values[0].value! } : p;
+  });
+}
+
 /** The common path of every base value (http://host/api -> /api), or null when they differ or are unknown. */
 function basePath(values: BaseValue[]): string | null {
   const paths = new Set<string>();
@@ -325,7 +338,7 @@ export function emitHttpCalls(state: AnalysisState, pending: PendingCall[], prox
         reasons.push(`environment key '${first.key}' is not a literal in every configuration`);
       }
       const bp = basePath(values);
-      if (bp) prefixPath = bp;
+      if (bp !== null) prefixPath = bp;
       else if (values.length > 1) reasons.push('the base path differs between configurations; canonicalRoute is relative to the base address');
       parts = parts.slice(1);
     } else if (first?.kind === 'literal' && splitUrl(first.text)) {
@@ -366,6 +379,7 @@ export function emitHttpCalls(state: AnalysisState, pending: PendingCall[], prox
         }
       }
     }
+    parts = uniformEnvironment(state, parts, call.file);
     const template = render(parts);
     let route = canonicalRoute(template);
     if (prefixPath) route = canonicalRoute(prefixPath + '/' + route);

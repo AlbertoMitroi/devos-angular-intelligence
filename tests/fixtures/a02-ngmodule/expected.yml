@@ -33,34 +33,34 @@ observations:
       declarations: [ts:.:src/app/app.component#AppComponent, ts:.:src/app/list.component#ListComponent]
       bootstrap: [ts:.:src/app/app.component#AppComponent]
       exports: []
-      at: src/app/app.module.ts:7
+      at: src/app/app.module.ts:12
     - kind: ui.module
       module: ts:.:src/app/shared/shared.module#SharedModule
       declarations: [ts:.:src/app/shared/badge.component#BadgeComponent, ts:.:src/app/shared/highlight.directive#HighlightDirective]
       bootstrap: []
-      at: src/app/shared/shared.module.ts:6
+      at: src/app/shared/shared.module.ts:11
     - kind: ui.component
       component: ts:.:src/app/app.component#AppComponent
       selector: app-root
       template: src/app/app.component.ts
       ext: { angular: { standalone: false } }
-      at: src/app/app.component.ts:3
+      at: src/app/app.component.ts:7
     - kind: ui.component
       component: ts:.:src/app/list.component#ListComponent
       selector: app-list
       template: src/app/list.component.html
       ext: { angular: { standalone: false } }
-      at: src/app/list.component.ts:3
+      at: src/app/list.component.ts:7
     - kind: ui.component
       component: ts:.:src/app/shared/badge.component#BadgeComponent
       selector: app-badge
       template: src/app/shared/badge.component.ts
       ext: { angular: { standalone: false } }
-      at: src/app/shared/badge.component.ts:3
+      at: src/app/shared/badge.component.ts:7
     - kind: ui.directive
       directive: ts:.:src/app/shared/highlight.directive#HighlightDirective
       selector: "[appHighlight]"
-      at: src/app/shared/highlight.directive.ts:3
+      at: src/app/shared/highlight.directive.ts:6
     - kind: ui.uses_component
       from: ts:.:src/app/app.component#AppComponent
       selector: app-list
@@ -85,5 +85,5 @@ observations:
       selector: "[ngIf]"
       at: src/app/list.component.html:4
 links:
-  - ui renders exact src/app/app.component.ts:5 -> src/app/list.component.ts:3
-  - ui renders exact src/app/list.component.html:4 -> src/app/shared/badge.component.ts:3
+  - ui renders exact src/app/app.component.ts:5 -> src/app/list.component.ts:7
+  - ui renders exact src/app/list.component.html:4 -> src/app/shared/badge.component.ts:7

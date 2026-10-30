@@ -34,4 +34,4 @@ relations:
 observations:
   kinds: [ui.component]
   items:
-    - { kind: ui.component, component: ts:.:src/app/cafe.component#CaféComponent, selector: app-café, at: src/app/cafe.component.ts:3 }
+    - { kind: ui.component, component: ts:.:src/app/cafe.component#CaféComponent, selector: app-café, at: src/app/cafe.component.ts:4 }

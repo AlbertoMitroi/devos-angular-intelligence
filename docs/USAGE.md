@@ -1,6 +1,6 @@
 # Usage
 
-**What it does:** exports the committed state from Git objects, discovers the Angular projects (`angular.json`, Nx `project.json`, package workspaces), installs dependencies without scripts into `/work` (package cache in `/cache`), builds one TypeScript program with type checker per project (parser-only fallback when install fails), and writes the graph, observations (components, DI, routes, templates, HTTP, SignalR, NgRx), links, redacted snippets, context packs, the SQLite index, `manifest.json` (written last, after validation against [contract v1.1](CONTRACT.md)) and `run.json`. `verify <generation>` repeats the checks. Install needs the network unless the cache already holds every package (`--offline`).
+**What it does:** exports the committed state from Git objects, discovers the Angular projects (`angular.json`, Nx `project.json`, package workspaces), installs dependencies without scripts into `/work` (package cache in `/cache`), builds one TypeScript program with type checker per project (parser-only fallback when install fails), and writes the graph, observations (components, DI, routes, templates, HTTP, SignalR, NgRx), links, redacted snippets, context packs, the SQLite index, `manifest.json` (written last, after validation against [contract v1.2](CONTRACT.md)) and `run.json`. `verify <generation>` repeats the checks. Install needs the network unless the cache already holds every package (`--offline`).
 
 ## GitHub Action
 

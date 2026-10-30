@@ -11,6 +11,11 @@ function ev(...records: Rec[]): string[] {
   return records.flatMap((r) => r.evidence as string[]);
 }
 
+/** The records' `site` evidence (contract v1.2 dispatch links), or all their evidence when a record has none. */
+function sites(...records: Rec[]): string[] {
+  return records.flatMap((r) => (typeof r.site === 'string' ? [r.site] : (r.evidence as string[])));
+}
+
 export function buildLinks(gen: Generation): void {
   // DI: di.consumes -> di.registers by service token. Several providers: ambiguous (the injector hierarchy decides).
   const registrations = new Map<string, Rec[]>();
@@ -43,8 +48,8 @@ export function buildLinks(gen: Generation): void {
   }
   for (const s of byKind(gen, 'inprocess.send')) {
     const targets = handlers.get(s.request as string) ?? [];
-    if (targets.length === 0) gen.addLink('dispatches_to', 'inprocess', s, null, 'unresolved', ev(s), 'no effect or reducer handles this action in the analysed code');
-    for (const h of targets) gen.addLink('dispatches_to', 'inprocess', s, h, 'exact', ev(s, h));
+    if (targets.length === 0) gen.addLink('dispatches_to', 'inprocess', s, null, 'unresolved', sites(s), 'no effect or reducer handles this action in the analysed code');
+    for (const h of targets) gen.addLink('dispatches_to', 'inprocess', s, h, 'exact', sites(s, h));
   }
 
   // UI: ui.uses_component -> ui.component of the used component (in this repository).

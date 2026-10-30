@@ -1,6 +1,6 @@
 // Integrity checks (contract Validation): schema per record, sorted unique ids, every referenced id exists,
 // contexts, snippets; evidence against the analysed commit when its blob map is available.
-import { schema, validate } from './schema.ts';
+import { kindSchema, schema, validate } from './schema.ts';
 import { compareOrdinal } from '../util/canonical.ts';
 
 export type Rec = Record<string, unknown> & { id: string };
@@ -35,8 +35,10 @@ export const KNOWN_OBSERVATION_KINDS = new Set([
   'topology.resource', 'topology.reference', 'data.maps_to',
   'inprocess.send', 'inprocess.handler', 'eventstore.append', 'eventstore.projection', 'realtime.hub', 'realtime.send', 'realtime.subscribe', 'search.index',
   'workflow.process', 'workflow.node', 'workflow.flow', 'workflow.handler', 'data.table', 'infra.resource', 'ui.component', 'ui.uses_component', 'ui.route',
+  // v1.2 (C4, C7)
+  'ui.directive', 'ui.pipe', 'ui.module', 'ui.uses_directive', 'http.interceptor', 'http.proxy', 'realtime.connection', 'realtime.invoke', 'state.action', 'call.argument',
 ]);
-export const KNOWN_LINK_KINDS = new Set(['consumes_contract', 'configured_route', 'possible_communication', 'dispatches_to', 'implemented_by_package', 'pushes_to']);
+export const KNOWN_LINK_KINDS = new Set(['consumes_contract', 'configured_route', 'possible_communication', 'dispatches_to', 'implemented_by_package', 'pushes_to', 'renders']);
 
 const SCHEMA_OF: Record<keyof RecordSet, string> = {
   projects: 'project',
@@ -117,6 +119,10 @@ export function checkIntegrity(set: RecordSet, blobs?: Map<string, string>): Int
     if (!contexts.has(o.context as string)) err(`observation ${o.id}: unknown context ${o.context}`);
     if (!projectPaths.has(o.project as string)) err(`observation ${o.id}: unknown project ${o.project}`);
     for (const e of o.evidence as string[]) if (!evidence.has(e)) err(`observation ${o.id}: unknown evidence ${e}`);
+    // v1.2: `site` is one of the record's evidence; a kind with its own schema file is validated against it too.
+    if (o.site !== undefined && !(o.evidence as string[]).includes(o.site as string)) err(`observation ${o.id}: site ${o.site} is not one of its evidence`);
+    const ks = kindSchema(o.kind as string);
+    if (ks) for (const e of validate(ks, o)) err(`observation ${o.id} (${o.kind}): ${e}`);
     const refs: string[] = [];
     const { id: _id, evidence: _ev, ...fields } = o;
     entityRefs(fields, refs);
@@ -134,6 +140,6 @@ export function checkIntegrity(set: RecordSet, blobs?: Map<string, string>): Int
   }
   const snippetBlobs = new Set(set.evidence.map((e) => e.blobId as string));
   for (const s of set.snippets) if (!snippetBlobs.has(s.blobId as string)) err(`snippet ${s.id}: no evidence uses blob ${s.blobId}`);
-  for (const [k, n] of [...unknownKinds].sort(([a], [b]) => compareOrdinal(a, b))) notes.push(`kind not in contract v1.1: ${k} (${n} records; kept, excluded from contract traversal)`);
+  for (const [k, n] of [...unknownKinds].sort(([a], [b]) => compareOrdinal(a, b))) notes.push(`kind not in contract v1.2: ${k} (${n} records; kept, excluded from contract traversal)`);
   return { errors, notes };
 }

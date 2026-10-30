@@ -30,5 +30,5 @@ observations:
       selector: app-editor
       template: src/app/editor.component.html
       ext: { angular: { standalone: true, inlineTemplate: false } }
-      at: src/app/editor.component.ts:4
+      at: src/app/editor.component.ts:9
 links: []

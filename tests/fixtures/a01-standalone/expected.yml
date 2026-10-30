@@ -63,18 +63,18 @@ observations:
       selector: app-root
       template: src/app/app.component.html
       ext: { angular: { standalone: true, inlineTemplate: false, imports: [ts:.:src/app/header.component#HeaderComponent, ts:.:src/app/item.component#ItemComponent] } }
-      at: src/app/app.component.ts:5
+      at: src/app/app.component.ts:10
     - kind: ui.component
       component: ts:.:src/app/header.component#HeaderComponent
       selector: app-header
       template: src/app/header.component.ts
       ext: { angular: { standalone: true, inlineTemplate: true } }
-      at: src/app/header.component.ts:3
+      at: src/app/header.component.ts:8
     - kind: ui.component
       component: ts:.:src/app/item.component#ItemComponent
       selector: app-item
       template: src/app/item.component.ts
-      at: src/app/item.component.ts:3
+      at: src/app/item.component.ts:7
     - kind: ui.uses_component
       from: ts:.:src/app/app.component#AppComponent
       selector: app-header
@@ -91,6 +91,6 @@ observations:
       to: unresolved
       at: src/app/app.component.html:9
 links:
-  - ui renders exact src/app/app.component.html:1 -> src/app/header.component.ts:3
-  - ui renders exact src/app/app.component.html:4 -> src/app/item.component.ts:3
+  - ui renders exact src/app/app.component.html:1 -> src/app/header.component.ts:8
+  - ui renders exact src/app/app.component.html:4 -> src/app/item.component.ts:7
   - ui renders unresolved src/app/app.component.html:9 -> null

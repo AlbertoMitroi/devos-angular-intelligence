@@ -25,4 +25,4 @@ observations:
     - kind: ui.component
       component: ts:.:src/app/widget.component#WidgetComponent
       selector: app-widget
-      at: src/app/widget.component.ts:4
+      at: src/app/widget.component.ts:8

@@ -28,7 +28,8 @@ observations:
       client: ts:.:src/app/status.service#StatusService
       caller: ts:.:src/app/status.service#StatusService.orders
       resolution: exact
-      at: proxy.conf.json:2,src/app/status.service.ts:9
+      at: src/app/status.service.ts:9
+      evidenceAt: proxy.conf.json:2,src/app/status.service.ts:9
     - kind: http.call
       method: GET
       urlTemplate: /health

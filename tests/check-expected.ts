@@ -84,6 +84,11 @@ export function compare(expected: Rec, dir: string, exitCode: number): string[] 
   }
   const observations = read(dir, 'graph/observations.ndjson');
   const byId = new Map(observations.map((o) => [o.id, o]));
+  // Where a fact is: its `site` (contract v1.2), else all its evidence locations (v1.1 generations).
+  const siteAt = (o: Rec) => (typeof o.site === 'string' ? at([o.site]) : at(o.evidence));
+  if (String(manifest.schemaVersion).startsWith('1.2')) {
+    for (const o of observations) if (typeof o.site !== 'string') failures.push(`observation without site: ${o.kind} @${at(o.evidence)}`);
+  }
   // refs: { "field.path": ["path:line", ...] }: the observations a field refers to, by their evidence location.
   const refsMatch = (refs: Rec | undefined, o: Rec) =>
     !refs ||
@@ -98,20 +103,21 @@ export function compare(expected: Rec, dir: string, exitCode: number): string[] 
     const kinds = new Set<string>(g.kinds);
     const remaining = observations.filter((o) => kinds.has(o.kind));
     for (const item of g.items ?? []) {
-      const { at: where, refs, ...fields } = item;
-      const i = remaining.findIndex((o) => subsetEqual(fields, o) && (where === undefined || at(o.evidence) === where) && refsMatch(refs, o));
+      // at: the site; evidenceAt: every evidence location (context included).
+      const { at: where, evidenceAt, refs, ...fields } = item;
+      const i = remaining.findIndex((o) => subsetEqual(fields, o) && (where === undefined || siteAt(o) === where) && (evidenceAt === undefined || at(o.evidence) === evidenceAt) && refsMatch(refs, o));
       if (i < 0) {
-        const near = remaining.filter((o) => o.kind === fields.kind && (where === undefined || at(o.evidence) === where));
+        const near = remaining.filter((o) => o.kind === fields.kind && (where === undefined || siteAt(o) === where));
         failures.push(`observation missing: ${JSON.stringify(item)}${near.length ? `\n    nearest at same place: ${JSON.stringify(near[0], (k, v) => (k === 'evidence' || k === 'id' ? undefined : v))}` : ''}`);
       } else remaining.splice(i, 1);
     }
-    for (const o of remaining) failures.push(`observation unexpected: ${o.kind} @${at(o.evidence)} ${JSON.stringify(o, (k, v) => (k === 'evidence' || k === 'id' ? undefined : v))}`);
+    for (const o of remaining) failures.push(`observation unexpected: ${o.kind} @${siteAt(o)} ${JSON.stringify(o, (k, v) => (k === 'evidence' || k === 'id' ? undefined : v))}`);
   }
   if (expected.links) {
     const links = read(dir, 'graph/links.ndjson').map((l) => {
       const from = byId.get(l.from.observation);
       const to = l.to ? byId.get(l.to.observation) : null;
-      return `${l.via} ${l.kind} ${l.resolution} ${from ? at(from.evidence) : '?'} -> ${to ? at(to.evidence) : 'null'}`;
+      return `${l.via} ${l.kind} ${l.resolution} ${from ? siteAt(from) : '?'} -> ${to ? siteAt(to) : 'null'}`;
     });
     sets(failures, 'links', expected.links, links);
   }

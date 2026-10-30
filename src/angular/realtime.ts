@@ -5,6 +5,7 @@ import type { Extractor } from '../extract/core.ts';
 import type { AnalysisState } from './state.ts';
 import { frameworkRef, stringValue, unwrap } from './common.ts';
 import { fold, render, canonicalRoute, splitUrl } from './fold.ts';
+import { uniformEnvironment } from './http.ts';
 import { compareOrdinal } from '../util/canonical.ts';
 
 const SIGNALR = '@microsoft/signalr';
@@ -40,6 +41,7 @@ export function observeRealtime(ex: Extractor, state: AnalysisState): void {
   if (!ex.checker) return;
   const ts = ex.ts;
   const hubs = new Map<T.Symbol, Hub>();
+  const connections: Hub[] = [];
   const fc = { isEnvironmentFile: (p: string) => state.env.isEnvironmentFile(p) };
   const files = [...ex.files].sort(([a], [b]) => compareOrdinal(a, b));
   // Pass 1: connections.
@@ -62,12 +64,14 @@ export function observeRealtime(ex: Extractor, state: AnalysisState): void {
             baseAddress = { source: 'literal', value: split.origin, nameSource: 'literal' };
             rest = [{ kind: 'literal', text: split.path }, ...parts.slice(1)];
           }
+          rest = uniformEnvironment(state, rest, rel);
           const urlTemplate = render(rest);
           const route = rest.some((p) => p.kind === 'literal') ? canonicalRoute(urlTemplate) : null;
           const evidence = ex.evidence(ex.calleeName(n))!;
           ex.observe('realtime.connection', { route, urlTemplate, baseAddress, client: classOf(ex, n), resolution: route ? 'exact' : 'unresolved' }, [evidence]);
           const s = holder(ex, n);
           if (s) hubs.set(s, { route, urlTemplate, baseAddress, evidence });
+          connections.push({ route, urlTemplate, baseAddress, evidence });
         }
       }
       ts.forEachChild(n, visit);
@@ -84,15 +88,19 @@ export function observeRealtime(ex: Extractor, state: AnalysisState): void {
         if (op && ['on', 'invoke', 'send', 'stream'].includes(op) && n.arguments[0]) {
           const method = stringValue(ex, n.arguments[0]);
           const receiver = unwrap(ex, n.expression.expression);
-          const hub = hubs.get(ex.symbolAt(ts.isPropertyAccessExpression(receiver) ? receiver.name : receiver)!);
+          const held = hubs.get(ex.symbolAt(ts.isPropertyAccessExpression(receiver) ? receiver.name : receiver)!);
+          // A connection made elsewhere (a factory, an injection token): the only connection this context builds, as a candidate.
+          const assumed = !held && connections.length === 1 ? connections[0] : undefined;
+          const hub = held ?? assumed;
           const fields: Record<string, unknown> = {
             route: hub?.route ?? null,
             hub: hub ? hub.urlTemplate : 'unknown',
             method: method ?? 'unknown',
             client: classOf(ex, n),
-            resolution: hub && method ? 'exact' : hub || method ? 'candidate' : 'unresolved',
+            resolution: held && method ? 'exact' : hub || method ? 'candidate' : 'unresolved',
           };
-          if (!hub) fields.reason = 'the connection is not built in a field or variable of this context';
+          if (assumed) fields.reason = 'the connection is not built in a field or variable of this context; it is assumed to be the only hub connection the context builds';
+          else if (!hub) fields.reason = 'the connection is not built in a field or variable of this context';
           const evidence = [ex.evidence(ex.calleeName(n)), hub?.evidence ?? null];
           if (op === 'on') ex.observe('realtime.subscribe', fields, evidence);
           else ex.observe('realtime.invoke', { ...fields, mode: op }, evidence);

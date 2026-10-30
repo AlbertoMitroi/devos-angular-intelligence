@@ -1,5 +1,5 @@
-// Validator for the JSON Schema subset the contract uses (type, required, properties, enum, const, pattern, items,
-// minItems, minimum). The vendored schemas (schema/v1, intelligence-contract) are embedded in the image, so `verify`
+// Validator for the JSON Schema subset the contract uses (type, required, properties, additionalProperties, enum, const,
+// pattern, items, minItems, minimum). The vendored schemas (schema/v1, intelligence-contract) are embedded in the image, so `verify`
 // works anywhere.
 import { readFileSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -18,6 +18,22 @@ export function schema(name: string): Schema {
     cache.set(name, s);
   }
   return s;
+}
+
+const kindCache = new Map<string, Schema | null>();
+
+/** The kind schema of an observation (`schema/v1/kinds/{kind}.schema.json`, contract v1.2), or null when there is none. */
+export function kindSchema(kind: string): Schema | null {
+  if (!kindCache.has(kind)) {
+    let s: Schema | null = null;
+    try {
+      s = JSON.parse(readFileSync(join(SCHEMA_DIR, 'kinds', `${kind}.schema.json`), 'utf8')) as Schema;
+    } catch {
+      s = null;
+    }
+    kindCache.set(kind, s);
+  }
+  return kindCache.get(kind)!;
 }
 
 export function schemaNames(): string[] {

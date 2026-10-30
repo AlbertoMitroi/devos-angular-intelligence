@@ -7,7 +7,7 @@ import { canonical, compareOrdinal } from '../util/canonical.ts';
 import { schema, validate } from './schema.ts';
 import { checkIntegrity, FILES, type RecordSet, type Rec } from './integrity.ts';
 
-export const SCHEMA_VERSION = '1.1';
+export const SCHEMA_VERSION = '1.2';
 export const KNOWN_CAPABILITIES = new Set<string>();
 
 export function writeNdjson(path: string, records: Rec[]): void {

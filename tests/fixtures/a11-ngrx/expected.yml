@@ -1,5 +1,6 @@
 # Fixture 11: NgRx: actions, a dispatch from a component, an effect reacting to the action and reaching an HTTP call
-# through a service (depth 3), and a reducer handling the second action.
+# through a service (depth 3), and a reducer handling the second action. Sends and handlers carry pattern
+# notification (contract v1.2); a handler's site is its name (effect load$, reducer ordersReducer).
 exitCode: 0
 status: complete
 loadModes:
@@ -22,11 +23,13 @@ observations:
       request: ts:.:src/app/orders.actions#loadOrders
       sender: ts:.:src/app/orders-page.component#OrdersPageComponent.refresh
       mechanism: ngrx
+      pattern: notification
       at: src/app/orders-page.component.ts:10
     - kind: inprocess.handler
       request: ts:.:src/app/orders.actions#loadOrders
       handler: ts:.:src/app/orders.effects#OrdersEffects.load$
       mechanism: ngrx
+      pattern: notification
       ext: { ngrx: { role: effect } }
       refs: { ext.ngrx.httpCalls: [src/app/orders.api.ts:9] }
       at: src/app/orders.effects.ts:12
@@ -34,8 +37,10 @@ observations:
       request: ts:.:src/app/orders.actions#ordersLoaded
       handler: ts:.:src/app/orders.reducer#ordersReducer
       mechanism: ngrx
+      pattern: notification
       ext: { ngrx: { role: reducer } }
-      at: src/app/orders.reducer.ts:6
+      at: src/app/orders.reducer.ts:4
+      evidenceAt: src/app/orders.reducer.ts:4,src/app/orders.reducer.ts:6
     - kind: http.call
       method: GET
       urlTemplate: /api/orders

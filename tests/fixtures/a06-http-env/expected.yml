@@ -51,7 +51,8 @@ observations:
           - { application: ".", configuration: production, file: src/environments/environment.prod.ts, value: "https://gateway.example.test" }
       caller: ts:.:src/app/orders.service#OrdersService.items
       resolution: exact
-      at: src/app/gateway.interceptor.ts:8,src/app/orders.service.ts:22
+      at: src/app/orders.service.ts:22
+      evidenceAt: src/app/gateway.interceptor.ts:8,src/app/orders.service.ts:22
     - kind: http.call
       method: DELETE
       urlTemplate: /orders/{}

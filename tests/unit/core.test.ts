@@ -12,6 +12,8 @@ import { readJsonc, norm, joinRepo, discover } from '../../src/discovery.ts';
 import { stripCredentials } from '../../src/workingcopy.ts';
 import { validate, schema } from '../../src/artifacts/schema.ts';
 import { tail } from '../../src/install.ts';
+import { writeIndex } from '../../src/artifacts/sqlite.ts';
+import { DatabaseSync } from 'node:sqlite';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -78,11 +80,14 @@ test('schema validator: required, enum, pattern, const', () => {
 
 test('vendored contract schema has not drifted from schema/VENDOR.json', () => {
   const vendor = JSON.parse(readFileSync(join(root, 'schema', 'VENDOR.json'), 'utf8'));
-  const files = readdirSync(join(root, 'schema', 'v1')).sort();
+  const files = (readdirSync(join(root, 'schema'), { recursive: true }) as string[])
+    .map((f) => f.split('\\').join('/'))
+    .filter((f) => f !== 'VENDOR.json' && /\.(json|sql)$/.test(f))
+    .sort();
   assert.deepEqual(files, Object.keys(vendor.files).sort());
   for (const f of files) {
-    const sha = createHash('sha256').update(readFileSync(join(root, 'schema', 'v1', f))).digest('hex');
-    assert.equal(sha, vendor.files[f], `${f} differs from intelligence-contract ${vendor.commit}`);
+    const sha = createHash('sha256').update(readFileSync(join(root, 'schema', f))).digest('hex');
+    assert.equal(sha, vendor.files[f], `${f} differs from the contract at ${vendor.tag} (${vendor.commit})`);
   }
 });
 
@@ -109,4 +114,18 @@ test('install root: an unrelated ancestor lockfile does not apply; a workspace r
   const byPath = new Map(found.projects.map((p) => [p.path, p.installRoot]));
   assert.equal(byPath.get('apps/web'), 'apps/web');
   assert.equal(byPath.get('tools/packages/lib'), 'tools');
+});
+
+test('index.sqlite has exactly the base statements of the vendored index.sql (index schema 1) and the v1.2 meta keys', () => {
+  const sql = readFileSync(join(root, 'schema', 'index', 'v1', 'index.sql'), 'utf8');
+  const base = sql.slice(sql.indexOf('-- base'), sql.indexOf('-- evidence')).split('\n').filter((l) => l.startsWith('create ')).map((l) => l.replace(/\s+/g, ' ').replace(/;$/, ''));
+  const path = join(mkdtempSync(join(tmpdir(), 'ai-index-')), 'index.sqlite');
+  const empty = { projects: [], entities: [], declarations: [], relations: [], evidence: [], observations: [], links: [], diagnostics: [], snippets: [] };
+  writeIndex(path, empty, { schemaVersion: '1.2', commit: 'c', engine: 'e@1', indexSchema: '1', status: 'complete', coverage: '{}' });
+  const db = new DatabaseSync(path, { readOnly: true });
+  const made = (db.prepare("select sql from sqlite_master where sql is not null and name not like 'search_%'").all() as { sql: string }[]).map((r) => r.sql.replace(/\s+/g, ' ').replace(/^CREATE TABLE/, 'create table'));
+  const meta = (db.prepare('select key from meta order by key').all() as { key: string }[]).map((r) => r.key);
+  db.close();
+  assert.deepEqual(made.map((s) => s.toLowerCase()).sort(), base.map((s) => s.toLowerCase()).sort());
+  assert.deepEqual(meta, ['commit', 'coverage', 'engine', 'indexSchema', 'schemaVersion', 'status']);
 });

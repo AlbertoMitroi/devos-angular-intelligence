@@ -1,5 +1,6 @@
 // NgRx (PLAN 3.3): createAction, store.dispatch, createEffect with ofType (and the HTTP calls an effect reaches),
-// createReducer with on(). Output: inprocess.send and inprocess.handler (contract v1.1, mechanism `ngrx`).
+// createReducer with on(). Output: inprocess.send and inprocess.handler (contract v1.2: mechanism `ngrx`,
+// pattern `notification`; `site` is the dispatch call, the effect's name or the reducer's name).
 import type * as T from 'typescript';
 import type { Extractor } from '../extract/core.ts';
 import { frameworkRef, unwrap } from './common.ts';
@@ -11,7 +12,16 @@ export interface PendingEffect {
   actions: string[];
   /** Entities called inside the effect body (declared targets). */
   calls: string[];
-  evidence: string;
+  /** The effect's name first (its `site`), then the createEffect call. */
+  evidence: (string | null)[];
+}
+
+/** Evidence of the name of the property or variable a call initializes (`load$ = createEffect(...)`), or null. */
+function declarationNameEvidence(ex: Extractor, n: T.Node): string | null {
+  const ts = ex.ts;
+  let p: T.Node | undefined = n.parent;
+  while (p && (ts.isParenthesizedExpression(p) || ts.isAsExpression(p) || ts.isSatisfiesExpression(p))) p = p.parent;
+  return p && (ts.isPropertyDeclaration(p) || ts.isVariableDeclaration(p)) ? ex.evidence(p.name) : null;
 }
 
 function isNgrx(ref: ReturnType<typeof frameworkRef>, pkg: string, name: string): boolean {
@@ -40,7 +50,7 @@ export function observeNgrx(ex: Extractor, pending: PendingEffect[]): void {
         } else if (isNgrx(ref, '@ngrx/store', 'Store.dispatch') && n.arguments[0]) {
           const action = actionOf(ex, n.arguments[0]);
           const sender = ex.containerOf(n);
-          if (action && sender) ex.observe('inprocess.send', { request: action, sender, mechanism: 'ngrx' }, [ex.evidence(ex.calleeName(n))]);
+          if (action && sender) ex.observe('inprocess.send', { request: action, sender, mechanism: 'ngrx', pattern: 'notification' }, [ex.evidence(ex.calleeName(n))]);
         } else if (isNgrx(ref, '@ngrx/effects', 'createEffect')) {
           const effect = ex.containerOf(n);
           if (effect) {
@@ -60,16 +70,17 @@ export function observeNgrx(ex: Extractor, pending: PendingEffect[]): void {
             for (const c of ex.calls) {
               if (body && c.node.getSourceFile() === sf && c.node.pos >= body.pos && c.node.end <= body.end) calls.add(c.to);
             }
-            pending.push({ ex, effect, actions: [...new Set(actions)].sort(compareOrdinal), calls: [...calls].sort(compareOrdinal), evidence: ex.evidence(ex.calleeName(n))! });
+            pending.push({ ex, effect, actions: [...new Set(actions)].sort(compareOrdinal), calls: [...calls].sort(compareOrdinal), evidence: [declarationNameEvidence(ex, n), ex.evidence(ex.calleeName(n))] });
           }
         } else if (isNgrx(ref, '@ngrx/store', 'createReducer')) {
           const reducer = ex.containerOf(n);
+          const reducerName = declarationNameEvidence(ex, n);
           for (const arg of n.arguments.slice(1)) {
             const u = unwrap(ex, arg);
             if (!ts.isCallExpression(u) || !isNgrx(frameworkRef(ex, u.expression), '@ngrx/store', 'on')) continue;
             for (const a of u.arguments.slice(0, -1)) {
               const action = actionOf(ex, a);
-              if (action && reducer) ex.observe('inprocess.handler', { request: action, handler: reducer, mechanism: 'ngrx', ext: { ngrx: { role: 'reducer' } } }, [ex.evidence(a)]);
+              if (action && reducer) ex.observe('inprocess.handler', { request: action, handler: reducer, mechanism: 'ngrx', pattern: 'notification', ext: { ngrx: { role: 'reducer' } } }, [reducerName, ex.evidence(a)]);
             }
           }
         }
@@ -101,7 +112,7 @@ export function emitEffects(pending: PendingEffect[], callsFrom: Map<string, Set
     }
     const httpCalls = [...reached].sort(compareOrdinal);
     for (const action of p.actions) {
-      p.ex.observe('inprocess.handler', { request: action, handler: p.effect, mechanism: 'ngrx', ext: { ngrx: { role: 'effect', calls: p.calls, httpCalls } } }, [p.evidence]);
+      p.ex.observe('inprocess.handler', { request: action, handler: p.effect, mechanism: 'ngrx', pattern: 'notification', ext: { ngrx: { role: 'effect', calls: p.calls, httpCalls } } }, p.evidence);
     }
     if (p.actions.length === 0) {
       p.ex.gen.diagnostic('info', 'effect-actions-unknown', p.effect, 'unknown', `Effect ${p.effect} has no ofType() with resolvable actions.`);

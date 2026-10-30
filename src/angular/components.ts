@@ -191,6 +191,8 @@ export function observeDeclarations(ex: Extractor, index: AngularIndex): void {
       if (!ts.isClassDeclaration(s)) continue;
       const meta = index.meta(s);
       if (!meta || !meta.decorator) continue;
+      // site: the class name (contract v1.2); the decorator stays as context evidence.
+      const site = s.name ? ex.evidence(s.name) : null;
       const ev = ex.evidence(meta.decorator);
       const ids = (list: T.ClassDeclaration[]) => [...new Set(list.map((c) => ex.ensureEntity(c)).filter((x): x is string => !!x))].sort(compareOrdinal);
       if (meta.kind === 'component') {
@@ -211,11 +213,11 @@ export function observeDeclarations(ex: Extractor, index: AngularIndex): void {
               styleUrls: [...styleUrls.map((u) => resolveRelative(rel, u)), ...(styleUrl ? [resolveRelative(rel, styleUrl)] : [])].sort(compareOrdinal),
             },
           },
-        }, [ev]);
+        }, [site, ev]);
       } else if (meta.kind === 'directive') {
-        ex.observe('ui.directive', { directive: meta.entity, selector: meta.selector, ext: { angular: { standalone: meta.standalone } } }, [ev]);
+        ex.observe('ui.directive', { directive: meta.entity, selector: meta.selector, ext: { angular: { standalone: meta.standalone } } }, [site, ev]);
       } else if (meta.kind === 'pipe') {
-        ex.observe('ui.pipe', { pipe: meta.entity, name: meta.pipeName, ext: { angular: { standalone: meta.standalone } } }, [ev]);
+        ex.observe('ui.pipe', { pipe: meta.entity, name: meta.pipeName, ext: { angular: { standalone: meta.standalone } } }, [site, ev]);
       } else if (meta.kind === 'ngModule') {
         ex.observe('ui.module', {
           module: meta.entity,
@@ -223,7 +225,7 @@ export function observeDeclarations(ex: Extractor, index: AngularIndex): void {
           imports: ids(meta.imports),
           exports: ids(meta.exports),
           bootstrap: ids(classesOf(ex, prop(ex, meta.arg, 'bootstrap'))),
-        }, [ev]);
+        }, [site, ev]);
       }
     }
   }

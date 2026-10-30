@@ -34,11 +34,11 @@ relations:
 observations:
   kinds: [ui.component, ui.uses_component]
   items:
-    - { kind: ui.component, component: ts:apps/admin:apps/admin/src/app/admin.component#AdminComponent, selector: admin-root, at: apps/admin/src/app/admin.component.ts:4 }
-    - { kind: ui.component, component: ts:apps/shop:apps/shop/src/app/shop.component#ShopComponent, selector: shop-root, at: apps/shop/src/app/shop.component.ts:4 }
-    - { kind: ui.component, component: ts:libs/ui:libs/ui/src/lib/button.component#ButtonComponent, selector: acme-button, at: libs/ui/src/lib/button.component.ts:3 }
+    - { kind: ui.component, component: ts:apps/admin:apps/admin/src/app/admin.component#AdminComponent, selector: admin-root, at: apps/admin/src/app/admin.component.ts:5 }
+    - { kind: ui.component, component: ts:apps/shop:apps/shop/src/app/shop.component#ShopComponent, selector: shop-root, at: apps/shop/src/app/shop.component.ts:5 }
+    - { kind: ui.component, component: ts:libs/ui:libs/ui/src/lib/button.component#ButtonComponent, selector: acme-button, at: libs/ui/src/lib/button.component.ts:4 }
     - { kind: ui.uses_component, from: ts:apps/admin:apps/admin/src/app/admin.component#AdminComponent, selector: acme-button, to: ts:libs/ui:libs/ui/src/lib/button.component#ButtonComponent, at: apps/admin/src/app/admin.component.ts:4 }
     - { kind: ui.uses_component, from: ts:apps/shop:apps/shop/src/app/shop.component#ShopComponent, selector: acme-button, to: ts:libs/ui:libs/ui/src/lib/button.component#ButtonComponent, at: apps/shop/src/app/shop.component.ts:4 }
 links:
-  - ui renders exact apps/admin/src/app/admin.component.ts:4 -> libs/ui/src/lib/button.component.ts:3
-  - ui renders exact apps/shop/src/app/shop.component.ts:4 -> libs/ui/src/lib/button.component.ts:3
+  - ui renders exact apps/admin/src/app/admin.component.ts:4 -> libs/ui/src/lib/button.component.ts:4
+  - ui renders exact apps/shop/src/app/shop.component.ts:4 -> libs/ui/src/lib/button.component.ts:4

@@ -137,11 +137,13 @@ export class Generation {
     return id;
   }
 
+  /** The first evidence is the `site` of the fact (contract v1.2: the call, the registration, the declaration name, ...). */
   observe(kind: string, project: string, context: string, fields: Record<string, unknown>, evidence: string[]): string {
     const sorted = [...new Set(evidence)].sort(compareOrdinal);
-    const id = recordId('obs', { kind, project, context, fields, evidence: sorted });
+    const site = evidence[0];
+    const id = recordId('obs', { kind, project, context, fields, site, evidence: sorted });
     if (!this.observations.has(id)) {
-      this.observations.set(id, { id, kind, project, context, ...fields, evidence: sorted });
+      this.observations.set(id, { id, kind, project, context, ...fields, site, evidence: sorted });
     }
     return id;
   }

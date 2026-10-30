@@ -1,6 +1,6 @@
-# Contract v1.1 (TypeScript and Angular)
+# Contract v1.2 (TypeScript and Angular)
 
-The format of a generation is the shared contract v1.1 (intelligence-contract `docs/CONTRACT-v1.1.md`, schemas vendored in [`schema/v1/`](../schema/v1/) at `ea4975a`, A7). This page lists what the Angular engine writes and where it extends the contract. `schemaVersion` in the manifest: `1.1`.
+The format of a generation is the shared contract v1.2 (devos-intelligence-contract `docs/CONTRACT-v1.2.md`, tag `v1.2.0`; schemas vendored in [`schema/`](../schema/), A7). This page lists what the Angular engine writes. `schemaVersion` in the manifest: `1.2` (A17). Every observation has `site`, its exact location; kinds with a file in `schema/v1/kinds/` are validated against it.
 
 ## Layout
 
@@ -16,7 +16,7 @@ The format of a generation is the shared contract v1.1 (intelligence-contract `d
 | `graph/links.ndjson` | Relationships inside the repository |
 | `graph/diagnostics.ndjson` | What failed, is partial, unsupported or unknown, with reasons |
 | `snippets.ndjson` | Redacted source lines, keyed by blob id and line |
-| `index.sqlite` | Query index with FTS5; compared between runs through `query <generation> dump` |
+| `index.sqlite` | Index schema 1: the base tables of `schema/index/v1/index.sql` as written, meta `schemaVersion`, `commit`, `engine`, `indexSchema`, `status`, `coverage`; compared between runs through `query <generation> dump` |
 | `context/` | Deterministic Markdown context packs: `overview.md`, `projects/{slug}.md`, `services/{name}-{hash8}.md` |
 | `run.json` | Timings and counts; excluded from determinism checks; not listed in the manifest |
 
@@ -34,22 +34,22 @@ Every NDJSON file: one canonical JSON object per line (keys sorted ordinally, no
 
 ## Observations
 
-| Kind | In v1.1 | Main fields |
+| Kind | Since | Main fields |
 |---|---|---|
-| `di.registers` | yes | `service`, `implementation`, `factory`, `existing`, `value`, `lifetime` (the `providedIn` string such as `root`, or `module`, `environment`, `component`, `route`, `unknown`), `registrationPath`, `multi` |
-| `di.consumes` | yes | `service`, `consumer`, `via` (`constructor`, `inject`), `ext.angular.flags` |
-| `http.call` | yes | `method`, `urlTemplate`, `canonicalRoute` (null when nothing of the path is known, A13), `baseAddress` (`source`: `environment`, `literal`, `interceptor`, `proxy`, `convention`, `unknown`; values per configuration, D20), `client`, `caller`, `resolution`, `reason` |
-| `config.key` | yes | `key`, `file`, `secret`, `configurations` (never the value) |
-| `ui.component` | yes | entity, `selector`, `template`, `ext.angular` (standalone, imports) |
-| `ui.directive`, `ui.pipe`, `ui.module` | no (A9) | entity, selector or name, template, `ext.angular` (standalone, imports, declarations, exports) |
-| `ui.uses_component` | yes | `from`, `selector`, `to` (entity or `unresolved` with `reason`) |
-| `ui.uses_directive` | no (A9) | `from`, `selector`, `to` (entity or `unresolved` with `reason`) |
-| `ui.route` | yes | `path` (full, or null with `ext.angular.relativePath` and reason), `component`, `loadComponent`, `loadChildren`, `redirectTo`, `guards`, `resolvers` |
-| `http.interceptor`, `http.proxy` | no (A9) | interceptor entity, `urlPrefix`, `registered`; proxy `prefix`, `target` (D20), `secret`, `pathRewrite` |
-| `realtime.subscribe` | yes | hub `route`, `hub`, `method` |
-| `realtime.connection`, `realtime.invoke` | no (A9) | hub `route`, `urlTemplate`, `baseAddress`, `method`, `mode` (`invoke`, `send`, `stream`) |
-| `inprocess.send`, `inprocess.handler` | yes | NgRx: action entity as `request`; sender; handler with `ext.ngrx.role` (`effect` with `calls` and reached `httpCalls`, or `reducer`) |
-| `state.action` | no (A9) | NgRx `action` entity, `type`, `mechanism` |
+| `di.registers` | v1.0 | `service`, `implementation`, `factory`, `existing`, `value`, `lifetime` (the `providedIn` string such as `root`, or `module`, `environment`, `component`, `route`, `unknown`), `registrationPath`, `multi` |
+| `di.consumes` | v1.0 | `service`, `consumer`, `via` (`constructor`, `inject`), `ext.angular.flags` |
+| `http.call` | v1.0 | `method`, `urlTemplate`, `canonicalRoute` (null when nothing of the path is known, A13), `baseAddress` (`source`: `environment`, `literal`, `interceptor`, `proxy`, `convention`, `unknown`; values per configuration, D20), `client`, `caller`, `resolution`, `reason` |
+| `config.key` | v1.0 | `key`, `file`, `secret`, `configurations` (never the value) |
+| `ui.component` | v1.1 | entity, `selector`, `template`, `ext.angular` (standalone, imports) |
+| `ui.directive`, `ui.pipe`, `ui.module` | v1.2 (C4) | entity, selector or name, template, `ext.angular` (standalone, imports, declarations, exports) |
+| `ui.uses_component` | v1.1 | `from`, `selector`, `to` (entity or `unresolved` with `reason`) |
+| `ui.uses_directive` | v1.2 (C4) | `from`, `selector`, `to` (entity or `unresolved` with `reason`) |
+| `ui.route` | v1.1 | `path` (full, or null with `ext.angular.relativePath` and reason), `component`, `loadComponent`, `loadChildren`, `redirectTo`, `guards`, `resolvers` |
+| `http.interceptor`, `http.proxy` | v1.2 (C4) | interceptor entity, `urlPrefix`, `registered`; proxy `prefix`, `target` (D20), `secret`, `pathRewrite` |
+| `realtime.subscribe` | v1.1 | hub `route`, `hub`, `method` |
+| `realtime.connection`, `realtime.invoke` | v1.2 (C4) | hub `route`, `urlTemplate`, `baseAddress`, `method`, `mode` (`invoke`, `send`, `stream`) |
+| `inprocess.send`, `inprocess.handler` | v1.1 | NgRx: action entity as `request`, `pattern: notification`; sender; handler with `ext.ngrx.role` (`effect` with `calls` and reached `httpCalls`, or `reducer`) |
+| `state.action` | v1.2 (C4) | NgRx `action` entity, `type`, `mechanism` |
 
 Unknown kinds follow compatibility rule 4: consumers keep them and exclude them from traversal; `verify` reports each as a note.
 
@@ -58,7 +58,7 @@ Unknown kinds follow compatibility rule 4: consumers keep them and exclude them 
 | Kind | Via | Rule |
 |---|---|---|
 | `consumes_contract` | `di` | consumer token to every provider of the token: one is `exact`, several `ambiguous`, the consumer component's own provider alone `exact`; none is `unresolved` with a reason (A11) |
-| `renders` | `ui` (A9) | `ui.uses_component` to the used `ui.component` |
+| `renders` | `ui` (v1.2) | `ui.uses_component` to the used `ui.component` |
 | `dispatches_to` | `inprocess` | `inprocess.send` to every `inprocess.handler` of the action (fan-out, contract D18) |
 
 HTTP and SignalR calls are linked to backends by federation (outside the engine), through `canonicalRoute` and `baseAddress`.

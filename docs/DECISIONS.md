@@ -59,8 +59,8 @@ Format per entry: context, options, choice, reason, how to revisit. Status `acce
 
 ## A7: Contract vendoring and drift check
 
-- **Context:** the engine writes contract v1.1 records validated against the shared schema.
-- **Choice:** `schema/v1/*.schema.json` vendored from intelligence-contract `ea4975a9f9f1891a1951278a2facbb6d2260817b`; `schema/VENDOR.json` lists each file's SHA-256 and a unit test fails on any difference. `schemaVersion` is `1.1`. The manifest uses `toolchain` (no Roslyn or SDK fields).
+- **Context:** the engine writes contract records validated against the shared schema.
+- **Choice:** `schema/v1` (with `kinds/`), `schema/index/v1/index.sql` and `schema/query/v1` vendored from devos-intelligence-contract `v1.2.0` (`2828fd639bd3360fddb43d543a5a832e2f713478`); until 0.1.0 it was `schema/v1` at `ea4975a` (v1.1). `schema/VENDOR.json` lists each file's SHA-256 and a unit test fails on any difference. `schemaVersion` is `1.2`. The manifest uses `toolchain` (no Roslyn or SDK fields).
 - **Reason:** one writer for the contract (the dotnet-intelligence-sdk session); a local edit cannot slip in unnoticed.
 - **Revisit:** each contract release (re-vendor, update `VENDOR.json`).
 - **Status:** accepted.
@@ -71,12 +71,12 @@ Format per entry: context, options, choice, reason, how to revisit. Status `acce
 - **Reason:** stable across runs and machines, readable, and unique for overloads (fixture 9).
 - **Status:** accepted.
 
-## A9: Observation and link kinds outside contract v1.1
+## A9: Observation and link kinds outside contract v1.1 (accepted in v1.2)
 
 - **Context:** Angular has concepts the v1.1 kind list does not name.
 - **Choice:** contract v1.1 already names `ui.component`, `ui.uses_component`, `ui.route`, `realtime.subscribe`, `inprocess.send`, `inprocess.handler` and the link `dispatches_to`; the engine uses those as defined. It also emits, as compatibility rule 4 allows, observations `ui.directive`, `ui.pipe`, `ui.module`, `ui.uses_directive`, `http.interceptor`, `http.proxy`, `realtime.connection`, `realtime.invoke` (client to server; v1.1 `realtime.send` is the server side), `state.action`, and the link `renders` (via `ui`, which v1.1 allows). `verify` prints each of these as a note with its count (fixtures 1 to 15: nine such kinds seen).
-- **Revisit:** propose them to the contract owner for v1.2 (to ask before any edit of intelligence-contract).
-- **Status:** proposed.
+- **Revisit:** proposed to the coordinator on 2026-10-30; contract v1.2.0 (C4) accepts every one with these field shapes, and `ui.route` with `path: null` (A12).
+- **Status:** accepted (contract v1.2).
 
 ## A10: HTTP client conventions by configuration
 
@@ -124,3 +124,16 @@ Format per entry: context, options, choice, reason, how to revisit. Status `acce
 - **Context:** callers pin the Action by `@v1`; the first release is `0.1.0`, whose semver major is 0. Generations pushed by callers must be readable by consumers that do not know which engine produced them.
 - **Choice:** `release.yml` on tag `v<version>` (version equal in `package.json` and `action.yml`) publishes `<version>` and `<version>-action` and moves `v1`, the major of the Action interface, also for 0.x releases; a breaking change to the Action inputs or outputs starts `v2`. The OCI example pushes `ghcr.io/<owner>/context-<repository>:<commit sha>-angular` plus a moving `:main-angular`, artifact type `application/vnd.devos.intelligence.generation.v1`, one byte-stable tar layer; the layout, agreed with the MCP consumer, is in [USAGE](USAGE.md#publishing-the-generation-oci). The same layout is used by dotnet-intelligence.
 - **Status:** accepted.
+
+## A17: Contract v1.2 adoption
+
+- **Context:** contract v1.2.0 (decisions C4 to C8) accepts the Angular kinds and adds `site`, kind schemas, in-process dispatch rules and the normative index schema; its last section lists what this engine changes.
+- **Choice:**
+  - every observation carries `site`, the first evidence its adapter passes: the call (HTTP, SignalR, dispatch), the registration or the injection (DI), the path property (routes), the element (template uses), the key (`config.key`), the rule (`http.proxy`), the URL expression (`http.interceptor`), and the declaration name for components, directives, pipes, modules, actions and NgRx handlers (the effect's or the reducer's name). Other evidence stays as context (decorator, `on()` argument, the hub connection, the interceptor or proxy rule a call goes through);
+  - observations of a kind with a file in `schema/v1/kinds/` are validated against it, in `analyze` and in `verify`; `site` must be one of the record's evidence;
+  - NgRx sends and handlers carry `pattern: notification`; `dispatches_to` evidence is the send's and the handler's `site`;
+  - `index.sqlite` creates the base section of the vendored `index.sql` as written (a unit test compares `sqlite_master`), writes meta `indexSchema` `1`, `status` and `coverage` (canonical JSON of the manifest's `coverage.summary`), takes `relations.path/line` from the first evidence by (path ordinal, startLine, startColumn) and `observations.path/line` from `site`. The optional evidence tables and the `search` kind `observation` are not written;
+  - the fixture comparator reads an observation's `at` as its `site` and `evidenceAt` as its whole evidence, and reports any `1.2` observation without `site`.
+- **Found while checking lab-web against its ground truth:** an empty common base path (`https://host` in every configuration) was reported as "base path differs"; an environment value identical in every configuration after the base (`${environment.apiUrl}${environment.hubPath}`) now becomes a literal (D20 destination); a SignalR connection made by a factory (an injection token) is not held in a field, so subscriptions on it are linked to the only connection the context builds, as `candidate` with a reason.
+- **Status:** accepted.
+

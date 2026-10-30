@@ -391,7 +391,7 @@ export async function analyze(o: AnalyzeOptions): Promise<number> {
     mkdirSync(o.out, { recursive: true });
     writeRecords(o.out, set);
     const sqlite = sqliteInfo();
-    writeIndex(join(o.out, 'index.sqlite'), set, { schemaVersion: SCHEMA_VERSION, commit: wc.commit, engine: `${ENGINE_NAME}@${ENGINE_VERSION}` });
+    writeIndex(join(o.out, 'index.sqlite'), set, { schemaVersion: SCHEMA_VERSION, commit: wc.commit, engine: `${ENGINE_NAME}@${ENGINE_VERSION}`, indexSchema: '1', status, coverage: canonical(summary) });
     writePacks(o.out, set, wc.commit, status, wc.remoteUrl ?? 'repository');
     const files = fileList(o.out);
     const manifest = {
