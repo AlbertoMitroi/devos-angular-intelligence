@@ -6,7 +6,7 @@ Format per entry: context, options, choice, reason, how to revisit. Status `acce
 
 - **Context:** the engine needs GitHub Actions, GHCR and arm64 runners (Step 1).
 - **Options:** public repository under `AlbertoMitroi`; private repository.
-- **Choice:** public `AlbertoMitroi/angular-intelligence`, local checkout `~/repos/devos/angular-intelligence`. The remote is created when CI first runs.
+- **Choice:** public `AlbertoMitroi/angular-intelligence`, local checkout `~/repos/devos/devos-angular-intelligence`. The remote is created when CI first runs.
 - **Reason:** same as dotnet-intelligence D1: free arm64 runners, and callers pull the Action image without credentials.
 - **Revisit:** if the engine must become private.
 - **Status:** accepted.

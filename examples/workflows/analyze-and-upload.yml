@@ -23,7 +23,7 @@ jobs:
 
       - name: Analyze
         id: intelligence
-        uses: AlbertoMitroi/angular-intelligence@v1
+        uses: AlbertoMitroi/devos-angular-intelligence@v1
         with:
           fail-on: failed
 

@@ -2,7 +2,7 @@
 
 ## Source of requirements
 
-`../dotnet-intelligence/docs/IMPLEMENTATION-PROMPT.md` applies **in full**, with the substitutions below. Parts 1 (rules), 2 (Docker-first, Action, CI, release), 3 (contract; now owned by `intelligence-contract`, v1.1 for TypeScript) and 5 (artifact builder) carry over unchanged in intent. Part 4 (extractor) is replaced by section 3 of this plan. Part 6 (eShop) is replaced by validation on the lab Angular app and on `abpframework/eShopOnAbp` `apps/angular`.
+`../devos-dotnet-intelligence/docs/IMPLEMENTATION-PROMPT.md` applies **in full**, with the substitutions below. Parts 1 (rules), 2 (Docker-first, Action, CI, release), 3 (contract; now owned by `intelligence-contract`, v1.1 for TypeScript) and 5 (artifact builder) carry over unchanged in intent. Part 4 (extractor) is replaced by section 3 of this plan. Part 6 (eShop) is replaced by validation on the lab Angular app and on `abpframework/eShopOnAbp` `apps/angular`.
 
 Owner decisions that apply: all projects under `~/repos/devos/` (local folder `angular-intelligence`), public GitHub repository under AlbertoMitroi when CI is needed, no em dashes in any text, worktree per writing session (rule 12).
 
